@@ -1,24 +1,3 @@
-# DarkVerse — Project Structure
-
-## Folder allocation
-
-```
-darkverse/
-├── index.html                 Main site: hero, journey engine, episodes,
-│                               timeline, characters, mystery tracker,
-│                               symbol tracker, viewing journal, AI chat
-├── families/
-│   ├── overview.html           Hub — how the 4 families connect to each other
-│   ├── nielsen.html            Nielsen family tree
-│   ├── kahnwald.html           Kahnwald family tree
-│   ├── doppler.html            Doppler family tree
-│   ├── tiedemann.html          Tiedemann family tree
-│   └── other.html              Sic Mundus / unaffiliated figures
-└── spoilers/
-    └── full-spoilers.html      Full-spoiler deep dive, behind its own
-                                 explicit warning gate — never linked to
-                                 from anywhere spoiler-gated
-```
 
 Open `index.html` to run the site. Every internal link is relative, so
 **keep this folder structure intact** — if you move `index.html` out on
