@@ -1,0 +1,2789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DarkVerse — Begin Your Journey</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,300;0,400;0,500;1,400&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void: #05050A;
+    --cosmic: #0D0B1F;
+    --charcoal: #111218;
+    --cyan: #4CC9F0;
+    --steel: #3A3F4C;
+    --gold: #C9A961;
+    --starlight: #F1EEFB;
+    --starlight-dim: rgba(241,238,251,0.55);
+    --glass-border: rgba(70,80,100,0.25);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    background: var(--void);
+    color: var(--starlight);
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+    height: 100%;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  /* ---------- Background layers ---------- */
+  #bg-canvas {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+  }
+
+  .nebula-layer {
+    position: fixed;
+    inset: -10%;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 3s ease;
+    transform: translate(calc(var(--mx, 0) * -22px), calc(var(--my, 0) * -22px)) scale(calc(1 + var(--zoom, 0) * 0.035));
+    will-change: transform;
+  }
+
+  .nebula-layer.show { opacity: 1; }
+
+  .nebula-blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(90px);
+    mix-blend-mode: screen;
+    animation: drift 40s ease-in-out infinite;
+  }
+
+  .nebula-blob.n1 {
+    width: 45vw; height: 45vw;
+    top: 8%; left: 5%;
+    background: radial-gradient(circle, rgba(70,80,100,0.22), transparent 70%);
+    animation-duration: 46s;
+  }
+  .nebula-blob.n2 {
+    width: 55vw; height: 55vw;
+    bottom: -10%; right: 0%;
+    background: radial-gradient(circle, rgba(76,201,240,0.14), transparent 70%);
+    animation-duration: 55s;
+    animation-delay: -12s;
+  }
+  .nebula-blob.n3 {
+    width: 35vw; height: 35vw;
+    top: 40%; left: 55%;
+    background: radial-gradient(circle, rgba(17,18,24,0.5), transparent 70%);
+    animation-duration: 38s;
+    animation-delay: -20s;
+  }
+
+  @keyframes drift {
+    0%, 100% { transform: translate(0,0) scale(1); }
+    33% { transform: translate(3vw, -2vw) scale(1.06); }
+    66% { transform: translate(-2vw, 3vw) scale(0.96); }
+  }
+
+  .vignette {
+    position: fixed;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    background: radial-gradient(ellipse at center, transparent 40%, rgba(5,5,10,0.75) 100%);
+  }
+
+  .grain {
+    position: fixed;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* ---------- Floating nav console ---------- */
+  nav {
+    position: fixed;
+    top: 28px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-140%);
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 14px;
+    background: linear-gradient(180deg, rgba(17,18,24,0.55), rgba(13,11,31,0.55));
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid var(--glass-border);
+    border-radius: 999px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04);
+    transition: transform 1.4s cubic-bezier(.16,1,.3,1);
+    animation: navfloat 7s ease-in-out infinite;
+    max-width: 94vw;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  nav::-webkit-scrollbar { display: none; }
+
+  nav.show { transform: translateX(-50%) translateY(0); }
+
+  @keyframes navfloat {
+    0%, 100% { margin-top: 0px; }
+    50% { margin-top: 6px; }
+  }
+
+  .nav-mark {
+    width: 30px;
+    height: 30px;
+    margin-right: 6px;
+    flex-shrink: 0;
+  }
+
+  .nav-link {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    color: var(--starlight-dim);
+    text-decoration: none;
+    padding: 9px 16px;
+    border-radius: 999px;
+    transition: color 0.4s ease, background 0.4s ease;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+
+  .nav-link:hover, .nav-link.active {
+    color: var(--starlight);
+    background: rgba(70,80,100,0.18);
+  }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    position: relative;
+    z-index: 10;
+    height: 100svh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 0 24px;
+  }
+
+  .blackhole-wrap {
+    position: relative;
+    width: min(520px, 78vw);
+    height: min(360px, 54vw);
+    opacity: 0;
+    transform: scale(0.85);
+    transition: opacity 3s ease, transform 3s cubic-bezier(.16,1,.3,1);
+  }
+
+  .blackhole-wrap.show {
+    opacity: 1;
+    transform: scale(1) translate(calc(var(--mx, 0) * 14px), calc(var(--my, 0) * 14px));
+  }
+
+  #bh-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .hero-copy {
+    position: relative;
+    margin-top: 8px;
+  }
+
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--cyan);
+    opacity: 0;
+    transition: opacity 1.6s ease, transform 1.6s ease;
+    transform: translateY(10px);
+  }
+  .eyebrow.show { opacity: 0.85; transform: translateY(0); }
+
+  .title {
+    font-family: 'Cormorant', serif;
+    font-weight: 300;
+    font-size: clamp(48px, 10vw, 108px);
+    letter-spacing: 0.06em;
+    line-height: 1;
+    margin-top: 14px;
+    background: linear-gradient(180deg, #FFFFFF 0%, var(--starlight-dim) 60%, rgba(70,80,100,0.7) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    opacity: 0;
+    filter: blur(6px);
+    transition: opacity 2s ease, filter 2s ease;
+  }
+  .title.show { opacity: 1; filter: blur(0); }
+
+  .subtitle {
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    font-size: clamp(14px, 1.6vw, 18px);
+    color: var(--starlight-dim);
+    margin-top: 18px;
+    letter-spacing: 0.02em;
+    opacity: 0;
+    transition: opacity 1.8s ease 0.3s;
+  }
+  .subtitle.show { opacity: 1; }
+
+  .cta {
+    margin-top: 44px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--void);
+    background: linear-gradient(135deg, var(--starlight), #cfc9e8);
+    border: none;
+    padding: 16px 38px;
+    border-radius: 999px;
+    cursor: pointer;
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity 1.6s ease 0.6s, transform 1.6s ease 0.6s, box-shadow 0.4s ease, transform 0.4s ease;
+    box-shadow: 0 0 0 rgba(76,201,240,0);
+  }
+  .cta.show { opacity: 1; transform: translateY(0); }
+  .cta:hover {
+    box-shadow: 0 0 40px rgba(76,201,240,0.5);
+    transform: translateY(-2px);
+  }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 36px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--starlight-dim);
+    opacity: 0;
+    transition: opacity 2s ease 1.4s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  .scroll-hint.show { opacity: 0.6; }
+  .scroll-line {
+    width: 1px;
+    height: 34px;
+    background: linear-gradient(180deg, var(--cyan), transparent);
+    animation: pulse-line 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse-line {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+  }
+
+  /* ---------- Season / Episode selector ---------- */
+  .selector {
+    position: relative;
+    z-index: 10;
+    min-height: 100vh;
+    padding: 100px 24px 140px;
+  }
+
+  .selector-head {
+    text-align: center;
+    max-width: 640px;
+    margin: 0 auto 64px;
+  }
+
+  .eyebrow2 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    opacity: 0.8;
+  }
+
+  .selector-title {
+    font-family: 'Cormorant', serif;
+    font-weight: 300;
+    font-size: clamp(34px, 5vw, 56px);
+    margin-top: 14px;
+    letter-spacing: 0.02em;
+    color: var(--starlight);
+  }
+
+  .selector-sub {
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    font-size: 15px;
+    color: var(--starlight-dim);
+    margin-top: 16px;
+    line-height: 1.6;
+  }
+
+  .ep-panel {
+    max-width: 860px;
+    margin: 0 auto;
+  }
+
+  /* ---- Season dropdown ---- */
+  .season-dropdown {
+    position: relative;
+    margin-bottom: 28px;
+  }
+
+  .dropdown-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.14);
+    color: var(--starlight);
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 17px;
+    padding: 12px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: border-color 0.25s ease, background 0.25s ease;
+  }
+  .dropdown-toggle:hover { border-color: rgba(255,255,255,0.35); background: rgba(255,255,255,0.07); }
+  .dropdown-toggle svg { transition: transform 0.25s ease; opacity: 0.8; }
+  .season-dropdown.open .dropdown-toggle svg { transform: rotate(180deg); }
+
+  .dropdown-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    min-width: 100%;
+    background: #0D0D10;
+    border: 1px solid rgba(255,255,255,0.14);
+    border-radius: 8px;
+    overflow: hidden;
+    z-index: 30;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+    opacity: 0;
+    transform: translateY(-6px);
+    pointer-events: none;
+    transition: opacity 0.22s ease, transform 0.22s ease;
+  }
+  .season-dropdown.open .dropdown-menu {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  .dropdown-item {
+    padding: 13px 18px;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--starlight-dim);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+  .dropdown-item:hover { background: rgba(255,255,255,0.08); color: var(--starlight); }
+  .dropdown-item.active { color: var(--starlight); background: rgba(255,255,255,0.05); }
+
+  /* ---- Episode list (Netflix-style rows) ---- */
+  .episode-list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .episode-row {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 22px;
+    padding: 22px 4px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    cursor: pointer;
+  }
+  .episode-row:first-child { padding-top: 6px; }
+
+  .ep-thumb {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    border-radius: 6px;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 30% 20%, rgba(255,255,255,0.10), transparent 55%),
+      linear-gradient(150deg, #1a1b20 0%, #0a0a0c 65%, #000 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: scale(1);
+    transition: transform 0.45s cubic-bezier(.16,1,.3,1);
+  }
+  .episode-row:hover .ep-thumb {
+    transform: scale(calc(1 + var(--zoom, 0) * 0.05 + 0.04));
+  }
+
+  .ep-thumb-num {
+    font-family: 'Cormorant', serif;
+    font-weight: 300;
+    font-size: 46px;
+    color: rgba(255,255,255,0.18);
+    letter-spacing: 0.02em;
+  }
+
+  .ep-thumb-play {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.35);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .episode-row:hover .ep-thumb-play { opacity: 1; }
+  .ep-thumb-play svg { width: 34px; height: 34px; }
+
+  .ep-info {
+    position: relative;
+    padding-right: 8px;
+  }
+
+  .ep-info-head {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+
+  .ep-num-label {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--starlight);
+  }
+
+  .ep-title-de {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--starlight);
+  }
+
+  .ep-title-en {
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    font-size: 12px;
+    font-style: italic;
+    color: var(--starlight-dim);
+    margin-top: 2px;
+  }
+
+  .ep-teaser {
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--starlight-dim);
+    margin-top: 10px;
+    max-width: 52ch;
+  }
+
+  .ep-watch-btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(255,255,255,0.28);
+    background: transparent;
+    color: rgba(255,255,255,0.5);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.25s ease;
+    flex-shrink: 0;
+  }
+  .ep-watch-btn:hover { border-color: var(--starlight); color: var(--starlight); }
+  .ep-watch-btn.watched {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: var(--void);
+  }
+
+  /* ================= Shared section chrome ================= */
+  .zone {
+    position: relative;
+    z-index: 10;
+    padding: 100px 24px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .zone-head {
+    text-align: center;
+    max-width: 640px;
+    margin: 0 auto 56px;
+  }
+  .zone-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    opacity: 0.8;
+  }
+  .zone-title {
+    font-family: 'Cormorant', serif;
+    font-weight: 300;
+    font-size: clamp(32px, 5vw, 52px);
+    margin-top: 14px;
+    color: var(--starlight);
+  }
+  .zone-sub {
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    font-size: 15px;
+    color: var(--starlight-dim);
+    margin-top: 16px;
+    line-height: 1.6;
+  }
+
+  /* ================= Characters ================= */
+  .char-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 22px;
+  }
+  .char-card {
+    text-align: center;
+    cursor: pointer;
+  }
+  .char-avatar {
+    width: 88px;
+    height: 88px;
+    margin: 0 auto 12px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at 35% 30%, rgba(255,255,255,0.14), transparent 60%), radial-gradient(circle, #16171d, #000 75%);
+    border: 1px solid rgba(255,255,255,0.14);
+    font-family: 'Cormorant', serif;
+    font-size: 26px;
+    color: var(--starlight);
+    position: relative;
+    transition: transform 0.4s cubic-bezier(.16,1,.3,1), border-color 0.4s ease, box-shadow 0.4s ease;
+  }
+  .char-card:hover .char-avatar {
+    transform: translateY(-4px) scale(calc(1 + var(--zoom,0) * 0.04 + 0.03));
+    border-color: rgba(76,201,240,0.55);
+    box-shadow: 0 0 30px rgba(76,201,240,0.2);
+  }
+  .char-name {
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 13px;
+    color: var(--starlight);
+  }
+  .char-family {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--starlight-dim);
+    margin-top: 3px;
+  }
+
+  .char-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 90;
+    background: rgba(0,0,0,0.72);
+    backdrop-filter: blur(6px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  .char-modal-backdrop.show { display: flex; }
+  .char-modal {
+    max-width: 440px;
+    width: 100%;
+    background: linear-gradient(160deg, #14151b, #08080a);
+    border: 1px solid rgba(255,255,255,0.14);
+    border-radius: 16px;
+    padding: 34px;
+    position: relative;
+  }
+  .char-modal-close {
+    position: absolute;
+    top: 16px; right: 16px;
+    background: none;
+    border: none;
+    color: var(--starlight-dim);
+    font-size: 20px;
+    cursor: pointer;
+  }
+  .char-modal-avatar {
+    width: 84px; height: 84px;
+    border-radius: 50%;
+    margin: 0 auto 18px;
+    background: radial-gradient(circle at 35% 30%, rgba(255,255,255,0.16), transparent 60%), radial-gradient(circle, #16171d, #000 75%);
+    border: 1px solid rgba(76,201,240,0.35);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Cormorant', serif; font-size: 28px; color: var(--starlight);
+  }
+  .char-modal-name {
+    font-family: 'Cormorant', serif;
+    font-size: 28px;
+    text-align: center;
+    color: var(--starlight);
+  }
+  .char-modal-actor {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    text-align: center;
+    color: var(--cyan);
+    letter-spacing: 0.08em;
+    margin-top: 4px;
+  }
+  .char-modal-bio {
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--starlight-dim);
+    margin-top: 18px;
+    text-align: center;
+  }
+  .char-modal-tags {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 18px;
+    flex-wrap: wrap;
+  }
+  .char-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--starlight-dim);
+    border: 1px solid rgba(255,255,255,0.14);
+    border-radius: 999px;
+    padding: 5px 11px;
+  }
+  .char-notes {
+    width: 100%;
+    margin-top: 18px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 10px;
+    padding: 12px 14px;
+    color: var(--starlight);
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    line-height: 1.6;
+    resize: vertical;
+    min-height: 60px;
+  }
+  .char-notes:focus { outline: none; border-color: var(--cyan); }
+  .char-notes::placeholder { color: var(--starlight-dim); opacity: 0.5; }
+
+  /* ================= Family tree ================= */
+  .tree-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+  }
+  .tree-family {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 14px;
+    padding: 22px;
+  }
+  .tree-family-name {
+    font-family: 'Cormorant', serif;
+    font-size: 22px;
+    color: var(--starlight);
+    margin-bottom: 4px;
+  }
+  .tree-family-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 16px;
+    display: block;
+  }
+  .tree-member {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    color: var(--starlight-dim);
+  }
+  .tree-member:first-of-type { border-top: none; }
+  .tree-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--cyan);
+    flex-shrink: 0;
+  }
+  .tree-locked {
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px dashed rgba(255,255,255,0.12);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: rgba(255,255,255,0.35);
+    cursor: pointer;
+    transition: color 0.3s ease;
+  }
+  .tree-locked:hover { color: var(--starlight-dim); }
+  .tree-locked.unlocked {
+    color: var(--gold);
+    border-top-color: rgba(201,169,97,0.3);
+  }
+
+  /* ================= Mystery tracker ================= */
+  .mystery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 20px;
+  }
+  .mystery-card {
+    position: relative;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 14px;
+    padding: 24px;
+    cursor: pointer;
+    transition: border-color 0.4s ease, background 0.4s ease;
+    overflow: hidden;
+  }
+  .mystery-orb {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #2a2b32, #0a0a0c 70%);
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.6);
+    margin-bottom: 14px;
+    transition: all 0.5s ease;
+  }
+  .mystery-card.solved .mystery-orb {
+    background: radial-gradient(circle at 35% 30%, #fff7dd, var(--gold) 55%, #7a6636 100%);
+    box-shadow: 0 0 24px rgba(201,169,97,0.6);
+  }
+  .mystery-card.solved {
+    border-color: rgba(201,169,97,0.4);
+    background: rgba(201,169,97,0.04);
+  }
+  .mystery-q {
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    color: var(--starlight);
+    line-height: 1.5;
+  }
+  .mystery-status {
+    margin-top: 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--starlight-dim);
+  }
+  .mystery-card.solved .mystery-status { color: var(--gold); }
+
+  /* ================= AI Roleplay ================= */
+  .comm-panel {
+    background: linear-gradient(165deg, rgba(255,255,255,0.035), rgba(0,0,0,0.2));
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 18px;
+    overflow: hidden;
+  }
+  .comm-select-row {
+    display: flex;
+    gap: 8px;
+    padding: 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    overflow-x: auto;
+  }
+  .comm-persona {
+    flex-shrink: 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    color: var(--starlight-dim);
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 999px;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    white-space: nowrap;
+  }
+  .comm-persona.active {
+    color: var(--void);
+    background: var(--cyan);
+    border-color: var(--cyan);
+  }
+  .comm-messages {
+    height: 360px;
+    overflow-y: auto;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .comm-msg {
+    max-width: 80%;
+    padding: 12px 16px;
+    border-radius: 14px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    line-height: 1.55;
+  }
+  .comm-msg.them {
+    align-self: flex-start;
+    background: rgba(255,255,255,0.06);
+    color: var(--starlight);
+    border: 1px solid rgba(76,201,240,0.18);
+  }
+  .comm-msg.me {
+    align-self: flex-end;
+    background: rgba(76,201,240,0.14);
+    color: var(--starlight);
+  }
+  .comm-typing {
+    align-self: flex-start;
+    display: flex;
+    gap: 4px;
+    padding: 12px 16px;
+  }
+  .comm-typing span {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--starlight-dim);
+    animation: typing-pulse 1.2s ease-in-out infinite;
+  }
+  .comm-typing span:nth-child(2) { animation-delay: 0.15s; }
+  .comm-typing span:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes typing-pulse {
+    0%, 60%, 100% { opacity: 0.25; transform: translateY(0); }
+    30% { opacity: 1; transform: translateY(-3px); }
+  }
+  .comm-input-row {
+    display: flex;
+    gap: 10px;
+    padding: 16px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+  .comm-input {
+    flex: 1;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.14);
+    border-radius: 999px;
+    padding: 11px 18px;
+    color: var(--starlight);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+  }
+  .comm-input:focus { outline: none; border-color: var(--cyan); }
+  .comm-send {
+    background: var(--cyan);
+    color: var(--void);
+    border: none;
+    border-radius: 999px;
+    padding: 0 22px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+  }
+  .comm-send:disabled { opacity: 0.4; cursor: not-allowed; }
+  .comm-note {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    color: var(--starlight-dim);
+    opacity: 0.55;
+    text-align: center;
+    padding: 12px 16px 4px;
+  }
+
+  /* ================= Timeline Explorer ================= */
+  .timeline-track {
+    position: relative;
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+    padding: 40px 10px 20px;
+    scrollbar-width: thin;
+  }
+  .timeline-track::before {
+    content: '';
+    position: absolute;
+    top: 61px;
+    left: 40px;
+    right: 40px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18) 8%, rgba(255,255,255,0.18) 92%, transparent);
+  }
+  .timeline-node {
+    flex-shrink: 0;
+    width: 130px;
+    text-align: center;
+    cursor: pointer;
+    position: relative;
+    z-index: 2;
+  }
+  .timeline-star {
+    width: 20px; height: 20px;
+    margin: 0 auto 10px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #fff, var(--cyan) 60%, #123 100%);
+    box-shadow: 0 0 14px rgba(76,201,240,0.5);
+    transition: transform 0.35s cubic-bezier(.16,1,.3,1), box-shadow 0.35s ease;
+  }
+  .timeline-node.supernova .timeline-star {
+    width: 30px; height: 30px;
+    background: radial-gradient(circle at 35% 30%, #fff, var(--gold) 55%, #7a5b1e 100%);
+    box-shadow: 0 0 26px rgba(201,169,97,0.65);
+  }
+  .timeline-node:hover .timeline-star, .timeline-node.active .timeline-star {
+    transform: scale(calc(1.25 + var(--zoom,0) * 0.1));
+  }
+  .timeline-node.active .timeline-star { box-shadow: 0 0 34px rgba(76,201,240,0.85); }
+  .timeline-year {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--starlight-dim);
+  }
+  .timeline-node.active .timeline-year, .timeline-node:hover .timeline-year { color: var(--starlight); }
+
+  .timeline-detail {
+    margin-top: 32px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 30px 34px;
+  }
+  .td-year {
+    font-family: 'Cormorant', serif;
+    font-size: 32px;
+    color: var(--starlight);
+  }
+  .td-blurb {
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--starlight-dim);
+    margin-top: 12px;
+    max-width: 60ch;
+  }
+  .td-chars {
+    margin-top: 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    color: var(--cyan);
+  }
+
+  /* ================= Worlds & Organizations ================= */
+  .subgroup-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--starlight-dim);
+    margin: 0 0 16px;
+    opacity: 0.65;
+  }
+  .card-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+    margin-bottom: 48px;
+  }
+  .lore-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 14px;
+    padding: 24px;
+    transition: border-color 0.35s ease, transform 0.35s ease;
+  }
+  .lore-card:hover { border-color: rgba(76,201,240,0.4); transform: translateY(-3px); }
+  .lore-card-name {
+    font-family: 'Cormorant', serif;
+    font-size: 22px;
+    color: var(--starlight);
+  }
+  .lore-card-desc {
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: var(--starlight-dim);
+    margin-top: 10px;
+  }
+  .lore-card-meta {
+    margin-top: 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.06em;
+    color: var(--gold);
+  }
+
+  /* ================= Locations Map ================= */
+  .loc-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 18px;
+  }
+  .loc-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 14px;
+    padding: 20px;
+    text-align: center;
+    transition: border-color 0.35s ease, transform 0.35s ease;
+  }
+  .loc-card:hover { border-color: rgba(76,201,240,0.4); transform: translateY(-3px); }
+  .loc-icon {
+    width: 42px; height: 42px;
+    margin: 0 auto 12px;
+    color: var(--cyan);
+    opacity: 0.85;
+  }
+  .loc-name {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--starlight);
+  }
+  .loc-desc {
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--starlight-dim);
+    margin-top: 8px;
+  }
+
+  /* ================= Spoiler level toggle ================= */
+  .spoiler-toggle {
+    display: flex;
+    gap: 6px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 999px;
+    padding: 4px;
+    margin-bottom: 24px;
+    width: fit-content;
+  }
+  .spoiler-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--starlight-dim);
+    background: transparent;
+    border: none;
+    border-radius: 999px;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+  }
+  .spoiler-btn.active {
+    background: var(--cyan);
+    color: var(--void);
+  }
+  .ep-tier-line {
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: 12.5px;
+    color: var(--gold);
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed rgba(255,255,255,0.1);
+  }
+
+  /* ================= Spoiler Preference Gate ================= */
+  .gate {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: rgba(2,2,4,0.86);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    opacity: 1;
+    transition: opacity 0.7s ease;
+  }
+  .gate.hide { opacity: 0; pointer-events: none; }
+  .gate-card {
+    max-width: 520px;
+    width: 100%;
+    text-align: center;
+  }
+  .gate-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--cyan);
+    opacity: 0.85;
+  }
+  .gate-title {
+    font-family: 'Cormorant', serif;
+    font-weight: 300;
+    font-size: clamp(28px, 5vw, 42px);
+    color: var(--starlight);
+    margin-top: 14px;
+  }
+  .gate-sub {
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    font-size: 14px;
+    color: var(--starlight-dim);
+    margin-top: 12px;
+    line-height: 1.6;
+  }
+  .gate-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 32px;
+  }
+  .gate-option {
+    text-align: left;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 12px;
+    padding: 16px 20px;
+    cursor: pointer;
+    transition: border-color 0.3s ease, background 0.3s ease, transform 0.3s ease;
+  }
+  .gate-option:hover {
+    border-color: var(--cyan);
+    background: rgba(76,201,240,0.06);
+    transform: translateY(-2px);
+  }
+  .gate-option-title {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 14.5px;
+    color: var(--starlight);
+  }
+  .gate-option-desc {
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    font-size: 12.5px;
+    color: var(--starlight-dim);
+    margin-top: 4px;
+  }
+
+  /* ================= Global Search ================= */
+  .search-trigger {
+    position: fixed;
+    top: 30px;
+    right: 24px;
+    z-index: 25;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: rgba(17,18,24,0.6);
+    backdrop-filter: blur(14px);
+    border: 1px solid var(--glass-border);
+    color: var(--starlight-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 1s ease, transform 1s ease, color 0.3s ease, border-color 0.3s ease;
+  }
+  .search-trigger.show { opacity: 1; transform: translateY(0); }
+  .search-trigger:hover { color: var(--starlight); border-color: rgba(76,201,240,0.5); }
+
+  .search-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 150;
+    background: rgba(2,2,4,0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    padding: 90px 24px 40px;
+    overflow-y: auto;
+  }
+  .search-overlay.show { display: flex; }
+
+  .search-box-row {
+    width: 100%;
+    max-width: 640px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+    padding-bottom: 14px;
+  }
+  .search-box {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--starlight);
+    font-family: 'Cormorant', serif;
+    font-size: 28px;
+    font-weight: 300;
+    outline: none;
+  }
+  .search-box::placeholder { color: var(--starlight-dim); opacity: 0.5; }
+  .search-close {
+    background: none;
+    border: none;
+    color: var(--starlight-dim);
+    font-size: 26px;
+    cursor: pointer;
+    line-height: 1;
+  }
+  .search-close:hover { color: var(--starlight); }
+
+  .search-results {
+    width: 100%;
+    max-width: 640px;
+    margin-top: 24px;
+  }
+  .search-group-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin: 22px 0 10px;
+  }
+  .search-result {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 4px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    cursor: pointer;
+  }
+  .search-result:hover { background: rgba(255,255,255,0.04); }
+  .search-result-title {
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 14.5px;
+    color: var(--starlight);
+  }
+  .search-result-sub {
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    font-size: 12px;
+    color: var(--starlight-dim);
+    margin-top: 2px;
+  }
+  .search-result-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--cyan);
+    flex-shrink: 0;
+    margin-left: 14px;
+  }
+  .search-empty {
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    font-size: 13px;
+    color: var(--starlight-dim);
+    opacity: 0.6;
+    text-align: center;
+    margin-top: 30px;
+  }
+  .search-flash {
+    outline: 2px solid var(--cyan) !important;
+    outline-offset: 4px;
+    transition: outline-color 1.5s ease;
+  }
+
+  /* ================= Character Relationship Graph ================= */
+  .graph-wrap {
+    position: relative;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 12px;
+    margin-top: 44px;
+  }
+  .graph-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 8px 12px 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    color: var(--starlight-dim);
+    letter-spacing: 0.04em;
+  }
+  .graph-legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .legend-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  #relGraph { width: 100%; height: auto; display: block; }
+  .graph-node circle {
+    transition: r 0.25s ease, opacity 0.25s ease;
+    cursor: pointer;
+  }
+  .graph-node text {
+    font-family: 'Inter', sans-serif;
+    fill: var(--starlight-dim);
+    font-size: 10.5px;
+    pointer-events: none;
+    transition: fill 0.25s ease, opacity 0.25s ease;
+  }
+  .graph-edge {
+    stroke: rgba(255,255,255,0.18);
+    stroke-width: 1;
+    transition: stroke 0.25s ease, opacity 0.25s ease;
+  }
+  .graph-dim { opacity: 0.15; }
+
+  /* ================= Symbol & Motif Tracker ================= */
+  .symbol-meaning {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed rgba(255,255,255,0.1);
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    font-size: 12.5px;
+    color: var(--gold);
+    display: none;
+  }
+  .mystery-card.solved .symbol-meaning { display: block; }
+
+  /* ================= Viewing Journal ================= */
+  .journal-note {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--starlight-dim);
+    opacity: 0.55;
+    margin-bottom: 28px;
+  }
+  .journal-group {
+    margin-bottom: 44px;
+  }
+  .journal-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+  }
+  .journal-field-label {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--starlight);
+    margin-bottom: 8px;
+  }
+  .journal-textarea {
+    width: 100%;
+    min-height: 90px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 10px;
+    padding: 12px 14px;
+    color: var(--starlight);
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    line-height: 1.6;
+    resize: vertical;
+  }
+  .journal-textarea:focus { outline: none; border-color: var(--cyan); }
+  .journal-textarea::placeholder { color: var(--starlight-dim); opacity: 0.45; }
+</style>
+</head>
+<body>
+
+<div class="gate" id="gate">
+  <div class="gate-card">
+    <div class="gate-eyebrow">Before we begin</div>
+    <h1 class="gate-title">How much should we tell you?</h1>
+    <p class="gate-sub">DarkVerse adapts everywhere on the site — episodes, characters, the timeline — to match what you choose. You can change this anytime.</p>
+    <div class="gate-options">
+      <div class="gate-option" data-tier="safe">
+        <div class="gate-option-title">🟢 Spoiler-Free</div>
+        <div class="gate-option-desc">Mood, questions, and open-ended teasers only. Nothing is ever given away.</div>
+      </div>
+      <div class="gate-option" data-tier="moderate">
+        <div class="gate-option-title">🟡 Moderate</div>
+        <div class="gate-option-desc">Adds what each episode introduces or confirms — still no outcomes.</div>
+      </div>
+      <div class="gate-option" data-tier="full">
+        <div class="gate-option-title">🔴 Full</div>
+        <div class="gate-option-desc">Broader arc notes too. Even here, we never state the actual answers.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<button class="search-trigger" id="searchTrigger" title="Search DarkVerse">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><path d="M21 21l-4.3-4.3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+</button>
+
+<div class="search-overlay" id="searchOverlay">
+  <div class="search-box-row">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2" style="color:var(--starlight-dim)"/><path d="M21 21l-4.3-4.3" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="color:var(--starlight-dim)"/></svg>
+    <input class="search-box" id="searchBox" type="text" placeholder="Search characters, episodes, locations, mysteries...">
+    <button class="search-close" id="searchClose">&times;</button>
+  </div>
+  <div class="search-results" id="searchResults"></div>
+</div>
+
+<canvas id="bg-canvas"></canvas>
+<div class="nebula-layer" id="nebula">
+  <div class="nebula-blob n1"></div>
+  <div class="nebula-blob n2"></div>
+  <div class="nebula-blob n3"></div>
+</div>
+<div class="vignette"></div>
+<div class="grain"></div>
+
+<nav id="nav">
+  <svg class="nav-mark" viewBox="0 0 100 100" fill="none">
+    <path d="M50 15 C 65 15, 75 30, 65 45 C 75 55, 75 72, 60 78 C 65 65, 58 52, 45 52 C 55 45, 55 25, 50 15 Z" fill="none" stroke="url(#g1)" stroke-width="3"/>
+    <path d="M50 15 C 35 15, 25 30, 35 45 C 25 55, 25 72, 40 78 C 35 65, 42 52, 55 52 C 45 45, 45 25, 50 15 Z" fill="none" stroke="url(#g2)" stroke-width="3"/>
+    <circle cx="50" cy="50" r="4" fill="#C9A961"/>
+    <defs>
+      <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#3A3F4C"/>
+        <stop offset="100%" stop-color="#4CC9F0"/>
+      </linearGradient>
+      <linearGradient id="g2" x1="1" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#4CC9F0"/>
+        <stop offset="100%" stop-color="#3A3F4C"/>
+      </linearGradient>
+    </defs>
+  </svg>
+  <a class="nav-link active" data-target=".hero">Journey</a>
+  <a class="nav-link" data-target="#selector">Episodes</a>
+  <a class="nav-link" data-target="#timeline">Timeline</a>
+  <a class="nav-link" data-target="#characters">Characters</a>
+  <a class="nav-link" data-target="#familytree">Family Tree</a>
+  <a class="nav-link" data-target="#worlds">Worlds</a>
+  <a class="nav-link" data-target="#locations">Locations</a>
+  <a class="nav-link" data-target="#mysteries">Mysteries</a>
+  <a class="nav-link" data-target="#symbols">Symbols</a>
+  <a class="nav-link" data-target="#journal">Journal</a>
+  <a class="nav-link" data-target="#airoleplay">Talk</a>
+</nav>
+
+<section class="hero">
+  <div class="blackhole-wrap" id="blackhole">
+    <canvas id="bh-canvas" width="1040" height="720"></canvas>
+  </div>
+
+  <div class="hero-copy">
+    <div class="eyebrow" id="eyebrow">Everything is connected</div>
+    <h1 class="title" id="title">DarkVerse</h1>
+    <p class="subtitle" id="subtitle">An unofficial, spoiler-safe companion for navigating Dark — season by season, episode by episode.</p>
+    <button class="cta" id="cta">Begin Your Journey</button>
+  </div>
+
+  <div class="scroll-hint" id="scrollhint">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<section class="selector" id="selector">
+  <div class="selector-head">
+    <div class="eyebrow2">No spoilers. Ever.</div>
+    <h2 class="selector-title">Episodes</h2>
+    <p class="selector-sub">Pick a season. Every synopsis below is written spoiler-safe — mood and questions only, never outcomes.</p>
+  </div>
+
+  <div class="ep-panel">
+    <div class="season-dropdown" id="seasonDropdown">
+      <button class="dropdown-toggle" id="dropdownToggle">
+        <span id="dropdownLabel">Season 1</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="dropdown-menu" id="dropdownMenu"></div>
+    </div>
+
+    <div class="spoiler-toggle" id="spoilerToggle">
+      <button class="spoiler-btn active" data-tier="safe">Safe</button>
+      <button class="spoiler-btn" data-tier="moderate">Moderate</button>
+      <button class="spoiler-btn" data-tier="full">Full</button>
+    </div>
+
+    <div class="episode-list" id="episodeList"></div>
+  </div>
+</section>
+
+<section class="zone" id="timeline">
+  <div class="zone-head">
+    <div class="zone-eyebrow">1888 — 2053</div>
+    <h2 class="zone-title">Timeline</h2>
+    <p class="zone-sub">Every year DarkVerse touches, laid out as stars. The brighter ones bend everything around them.</p>
+  </div>
+  <div class="timeline-track" id="timelineTrack"></div>
+  <div class="timeline-detail" id="timelineDetail"></div>
+</section>
+
+<section class="zone" id="characters">
+  <div class="zone-head">
+    <div class="zone-eyebrow">Four Families, Three Timelines</div>
+    <h2 class="zone-title">Characters</h2>
+    <p class="zone-sub">Every profile here is basic and factual — actor, family, first appearance. No relationships, fates, or plot details.</p>
+  </div>
+  <div class="char-grid" id="charGrid"></div>
+
+  <div class="graph-wrap">
+    <div class="graph-legend">
+      <span><span class="legend-dot" style="background:#4CC9F0"></span>Nielsen</span>
+      <span><span class="legend-dot" style="background:#C9A961"></span>Kahnwald</span>
+      <span><span class="legend-dot" style="background:#8FA3B0"></span>Doppler</span>
+      <span><span class="legend-dot" style="background:#7A8794"></span>Tiedemann</span>
+      <span><span class="legend-dot" style="background:#F1EEFB"></span>Unaffiliated / Sic Mundus</span>
+    </div>
+    <svg id="relGraph" viewBox="0 0 900 560"></svg>
+  </div>
+</section>
+
+<div class="char-modal-backdrop" id="charModalBackdrop">
+  <div class="char-modal" id="charModal"></div>
+</div>
+
+<section class="zone" id="familytree">
+  <div class="zone-head">
+    <div class="zone-eyebrow">Winden, Population: Entangled</div>
+    <h2 class="zone-title">Family Tree</h2>
+    <p class="zone-sub">The four founding families, as the show introduces them. Some connections stay dark until you've earned them — tap the locked line in each card.</p>
+  </div>
+  <div class="tree-grid" id="treeGrid"></div>
+</section>
+
+<section class="zone" id="worlds">
+  <div class="zone-head">
+    <div class="zone-eyebrow">Not Every Winden Is the Same Winden</div>
+    <h2 class="zone-title">Worlds &amp; Organizations</h2>
+    <p class="zone-sub">Kept deliberately abstract — enough to orient you, not enough to spoil why they diverge.</p>
+  </div>
+
+  <p class="subgroup-label">Worlds</p>
+  <div class="card-row" id="worldsGrid"></div>
+
+  <p class="subgroup-label">Organizations</p>
+  <div class="card-row" id="orgsGrid"></div>
+</section>
+
+<section class="zone" id="locations">
+  <div class="zone-head">
+    <div class="zone-eyebrow">Winden, Mapped</div>
+    <h2 class="zone-title">Locations</h2>
+    <p class="zone-sub">The places this story keeps returning to, across every year it visits.</p>
+  </div>
+  <div class="loc-grid" id="locGrid"></div>
+</section>
+
+<section class="zone" id="mysteries">
+  <div class="zone-head">
+    <div class="zone-eyebrow">Track Your Own Progress</div>
+    <h2 class="zone-title">Mystery Tracker</h2>
+    <p class="zone-sub">Questions the show itself puts in front of you early on. Mark one solved once you personally know the answer — DarkVerse never tells you.</p>
+  </div>
+  <div class="mystery-grid" id="mysteryGrid"></div>
+</section>
+
+<section class="zone" id="symbols">
+  <div class="zone-head">
+    <div class="zone-eyebrow">Recurring, Not Random</div>
+    <h2 class="zone-title">Symbol &amp; Motif Tracker</h2>
+    <p class="zone-sub">Mark one as spotted once you've noticed it yourself — the meaning tease only appears after you do.</p>
+  </div>
+  <div class="mystery-grid" id="symbolGrid"></div>
+</section>
+
+<section class="zone" id="journal">
+  <div class="zone-head">
+    <div class="zone-eyebrow">Your Own Record</div>
+    <h2 class="zone-title">Viewing Journal</h2>
+    <p class="zone-sub">Rewatch notes, theme reflections, and a finale space — all yours, all private to this session.</p>
+  </div>
+  <p class="journal-note">Notes here live only in this browser tab and won't be saved after you close or reload the page.</p>
+
+  <div class="journal-group">
+    <p class="subgroup-label">Rewatch Checklist</p>
+    <div class="journal-grid" id="journalRewatch"></div>
+  </div>
+
+  <div class="journal-group">
+    <p class="subgroup-label">Theme Journal</p>
+    <div class="journal-grid" id="journalThemes"></div>
+  </div>
+
+  <div class="journal-group">
+    <p class="subgroup-label">Finale Reflection</p>
+    <div class="journal-grid" id="journalFinale"></div>
+  </div>
+</section>
+
+<section class="zone" id="airoleplay">
+  <div class="zone-head">
+    <div class="zone-eyebrow">Spacetime Communication Interface</div>
+    <h2 class="zone-title">Talk to Winden</h2>
+    <p class="zone-sub">An original, in-character conversation — not a script from the show. Kept deliberately cryptic and spoiler-safe either way.</p>
+  </div>
+  <div class="comm-panel">
+    <div class="comm-select-row" id="personaRow"></div>
+    <div class="comm-messages" id="commMessages"></div>
+    <div class="comm-input-row">
+      <input class="comm-input" id="commInput" type="text" placeholder="Send a message across time...">
+      <button class="comm-send" id="commSend">Send</button>
+    </div>
+    <div class="comm-note">Experimental — responses are AI-generated in an original character voice, not dialogue from the series.</div>
+  </div>
+</section>
+
+<script>
+  // ---------- Starfield canvas ----------
+  const canvas = document.getElementById('bg-canvas');
+  const ctx = canvas.getContext('2d');
+  let w, h, stars = [], shootingStars = [];
+  const STAR_COUNT = 260;
+
+  function resize() {
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  function initStars() {
+    stars = [];
+    for (let i = 0; i < STAR_COUNT; i++) {
+      stars.push({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        r: Math.random() * 1.3 + 0.2,
+        baseAlpha: Math.random() * 0.6 + 0.2,
+        twinkleSpeed: Math.random() * 0.015 + 0.003,
+        phase: Math.random() * Math.PI * 2,
+        layer: Math.random() < 0.7 ? 1 : (Math.random() < 0.9 ? 2 : 3),
+        appear: Math.random() * 3.5 // seconds delay before appearing
+      });
+    }
+  }
+  initStars();
+
+  let startTime = performance.now();
+  let mouseX = 0, mouseY = 0;
+  window.addEventListener('mousemove', (e) => {
+    mouseX = (e.clientX / w - 0.5);
+    mouseY = (e.clientY / h - 0.5);
+  });
+
+  // Smoothed parallax-zoom: pushes --mx/--my/--zoom CSS vars for the
+  // nebula layer, hero black hole, and any element that opts in.
+  let smX = 0, smY = 0;
+  function parallaxLoop() {
+    smX += (mouseX - smX) * 0.06;
+    smY += (mouseY - smY) * 0.06;
+    const dist = Math.min(1, Math.hypot(smX, smY) * 1.6);
+    const root = document.documentElement.style;
+    root.setProperty('--mx', smX.toFixed(4));
+    root.setProperty('--my', smY.toFixed(4));
+    root.setProperty('--zoom', (1 - dist).toFixed(4));
+    requestAnimationFrame(parallaxLoop);
+  }
+  if (!reduceMotionInit()) requestAnimationFrame(parallaxLoop);
+  function reduceMotionInit() { return window.matchMedia('(prefers-reduced-motion: reduce)').matches; }
+
+  function maybeSpawnShootingStar() {
+    if (Math.random() < 0.0025 && shootingStars.length < 2) {
+      const startX = Math.random() * w * 0.6 + w * 0.2;
+      shootingStars.push({
+        x: startX, y: -20,
+        vx: -2.4, vy: 3.2,
+        life: 1, maxLife: 60 + Math.random() * 20
+      });
+    }
+  }
+
+  function draw(now) {
+    const elapsed = (now - startTime) / 1000;
+    ctx.clearRect(0, 0, w, h);
+
+    // subtle radial glow center (light bending toward hero)
+    const grad = ctx.createRadialGradient(w/2, h*0.42, 0, w/2, h*0.42, w*0.5);
+    grad.addColorStop(0, 'rgba(70,80,100,0.05)');
+    grad.addColorStop(1, 'rgba(5,5,10,0)');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, w, h);
+
+    for (const s of stars) {
+      if (elapsed < s.appear) continue;
+      const introFade = Math.min(1, (elapsed - s.appear) / 1.2);
+      const twinkle = Math.sin(elapsed * (s.twinkleSpeed * 60) + s.phase) * 0.35 + 0.65;
+      const parallax = s.layer * 6;
+      const px = s.x + mouseX * parallax;
+      const py = s.y + mouseY * parallax;
+      const alpha = s.baseAlpha * twinkle * introFade;
+
+      ctx.beginPath();
+      ctx.arc(px, py, s.r * (s.layer === 3 ? 1.4 : 1), 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(241,238,251,${alpha})`;
+      ctx.fill();
+
+      if (s.layer === 3 && twinkle > 0.9) {
+        ctx.beginPath();
+        ctx.arc(px, py, s.r * 3, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(76,201,240,${alpha * 0.15})`;
+        ctx.fill();
+      }
+    }
+
+    maybeSpawnShootingStar();
+    shootingStars.forEach((sh, i) => {
+      sh.x += sh.vx; sh.y += sh.vy; sh.life++;
+      const fade = 1 - sh.life / sh.maxLife;
+      if (fade <= 0) { shootingStars.splice(i, 1); return; }
+      ctx.beginPath();
+      ctx.moveTo(sh.x, sh.y);
+      ctx.lineTo(sh.x - sh.vx * 8, sh.y - sh.vy * 8);
+      ctx.strokeStyle = `rgba(241,238,251,${fade * 0.8})`;
+      ctx.lineWidth = 1.4;
+      ctx.stroke();
+    });
+
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+
+  // ---------- Hero reveal sequence (starts only after the spoiler gate closes) ----------
+  const seq = [
+    { el: () => document.getElementById('nebula'), cls: 'show', delay: 1200 },
+    { el: () => document.getElementById('blackhole'), cls: 'show', delay: 2600 },
+    { el: () => document.getElementById('eyebrow'), cls: 'show', delay: 3600 },
+    { el: () => document.getElementById('title'), cls: 'show', delay: 4200 },
+    { el: () => document.getElementById('subtitle'), cls: 'show', delay: 4900 },
+    { el: () => document.getElementById('cta'), cls: 'show', delay: 5500 },
+    { el: () => document.getElementById('nav'), cls: 'show', delay: 5900 },
+    { el: () => document.getElementById('scrollhint'), cls: 'show', delay: 6300 },
+    { el: () => document.getElementById('searchTrigger'), cls: 'show', delay: 5900 },
+  ];
+  function startHeroSequence() {
+    seq.forEach(step => {
+      setTimeout(() => step.el().classList.add(step.cls), step.delay);
+    });
+  }
+
+  document.getElementById('cta').addEventListener('click', () => {
+    document.getElementById('selector').scrollIntoView({ behavior: 'smooth' });
+  });
+
+  // ---------- Spoiler preference gate ----------
+  const gateEl = document.getElementById('gate');
+  document.querySelectorAll('.gate-option').forEach(opt => {
+    opt.addEventListener('click', () => {
+      spoilerTier = opt.dataset.tier;
+      document.querySelectorAll('.spoiler-btn').forEach(b => b.classList.toggle('active', b.dataset.tier === spoilerTier));
+      if (seasons[currentSeasonIndex]) renderEpisodeList(seasons[currentSeasonIndex]);
+      gateEl.classList.add('hide');
+      startHeroSequence();
+    });
+  });
+
+  // ==================================================================
+  // REALISTIC BLACK HOLE RENDERER (canvas, physically-inspired look:
+  // tilted accretion disk, Doppler-beamed brightness, lensed arcs
+  // above/below the shadow, photon ring). Reused for hero + mini view.
+  // ==================================================================
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function makeDiskParticles(count) {
+    const particles = [];
+    for (let i = 0; i < count; i++) {
+      particles.push({
+        angle: Math.random() * Math.PI * 2,
+        rr: 1.28 + Math.pow(Math.random(), 1.6) * 2.1, // radius ratio from horizon
+        jitter: (Math.random() - 0.5) * 0.06,
+        size: Math.random() * 1.4 + 0.4,
+        speed: 0.15 + Math.random() * 0.1
+      });
+    }
+    return particles;
+  }
+
+  function diskColor(rr, alpha) {
+    // inner = hot blue-white, mid = gold, outer = deep ember red
+    const t = Math.min(1, (rr - 1.28) / 2.1);
+    let r, g, b;
+    if (t < 0.5) {
+      const k = t / 0.5;
+      r = 255 - k * (255 - 255); g = 250 - k * (250 - 205); b = 245 - k * (245 - 110);
+    } else {
+      const k = (t - 0.5) / 0.5;
+      r = 255; g = 205 - k * (205 - 70); b = 110 - k * (110 - 40);
+    }
+    return `rgba(${r|0},${g|0},${b|0},${alpha})`;
+  }
+
+  function drawBlackHole(ctx, cw, ch, t, particles) {
+    ctx.clearRect(0, 0, cw, ch);
+    const cx = cw / 2, cy = ch / 2;
+    const R = Math.min(cw, ch) * 0.155; // event horizon radius
+    const squash = 0.30; // perspective flatten of the disk ellipse
+
+    // faint outer glow
+    const glow = ctx.createRadialGradient(cx, cy, R * 0.5, cx, cy, R * 4.2);
+    glow.addColorStop(0, 'rgba(70,80,100,0.10)');
+    glow.addColorStop(1, 'rgba(5,5,10,0)');
+    ctx.fillStyle = glow;
+    ctx.fillRect(0, 0, cw, ch);
+
+    const rot = reduceMotion ? 0 : t * 0.06;
+
+    // Disk particles (both sides; ones geometrically inside the horizon radius get skipped later by drawing horizon on top)
+    for (const p of particles) {
+      const a = p.angle + rot * p.speed * 4;
+      const rx = R * p.rr;
+      const ry = R * p.rr * squash;
+      const x = cx + Math.cos(a) * rx;
+      const y = cy + Math.sin(a) * ry * (1 + p.jitter);
+
+      // Doppler beaming: side moving toward viewer (left, cos(a) < 0) is brighter
+      const beam = 0.55 + 0.55 * (-Math.cos(a));
+      const alpha = Math.max(0.08, Math.min(1, beam * (1 - (p.rr - 1.28) / 3.6)));
+
+      ctx.beginPath();
+      ctx.arc(x, y, p.size * (0.6 + beam * 0.6), 0, Math.PI * 2);
+      ctx.fillStyle = diskColor(p.rr, alpha);
+      ctx.fill();
+    }
+
+    // Lensed arcs: light from the far side of the disk bent OVER the top and
+    // UNDER the bottom of the shadow (the signature Interstellar-style look)
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    [ -1, 1 ].forEach(dir => {
+      const grad = ctx.createLinearGradient(cx - R * 2, cy, cx + R * 2, cy);
+      grad.addColorStop(0, 'rgba(255,225,180,0)');
+      grad.addColorStop(0.5, 'rgba(255,225,180,0.55)');
+      grad.addColorStop(1, 'rgba(255,225,180,0)');
+      ctx.strokeStyle = grad;
+      ctx.lineWidth = R * 0.09;
+      ctx.beginPath();
+      ctx.ellipse(cx, cy, R * 2.05, R * 0.42, 0, Math.PI * 0.98 * dir, Math.PI * 0.02 * dir, dir < 0);
+      ctx.stroke();
+    });
+    ctx.restore();
+
+    // Event horizon shadow
+    ctx.beginPath();
+    ctx.arc(cx, cy, R, 0, Math.PI * 2);
+    ctx.fillStyle = '#000';
+    ctx.shadowColor = 'rgba(70,80,100,0.5)';
+    ctx.shadowBlur = R * 0.5;
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    // Photon ring (thin bright rim right at the shadow edge)
+    ctx.beginPath();
+    ctx.arc(cx, cy, R * 1.015, 0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(255,245,230,0.75)';
+    ctx.lineWidth = Math.max(1, R * 0.018);
+    ctx.stroke();
+  }
+
+  function initBlackHoleCanvas(canvasId, particleCount) {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const particles = makeDiskParticles(particleCount);
+    const cw = canvas.width, ch = canvas.height;
+    let start = performance.now();
+
+    function loop(now) {
+      const t = (now - start) / 1000;
+      drawBlackHole(ctx, cw, ch, t, particles);
+      if (!reduceMotion) requestAnimationFrame(loop);
+    }
+    requestAnimationFrame(loop);
+  }
+
+  initBlackHoleCanvas('bh-canvas', 1400);
+
+  // ==================================================================
+  // EPISODE DATA — original spoiler-safe teasers written from general
+  // knowledge of the series. No plot outcomes revealed; each teaser
+  // only frames the question/mood of that episode.
+  // ==================================================================
+  const seasons = [
+    {
+      id: 1,
+      name: 'Season One',
+      subtitle: 'The First Cycle',
+      meta: 'A boy vanishes from a small town, and the ground underneath everyone\'s certainty starts to give way.',
+      episodes: [
+        { n: 1, de: 'Geheimnisse', en: 'Secrets', teaser: 'A quiet town\'s routine cracks the moment someone goes missing — and old wounds refuse to stay buried.', mod: 'Introduces Winden\'s missing-child case.', full: 'Establishes the town, the search, and the first hints something\'s off with time itself.' },
+        { n: 2, de: 'Lügen', en: 'Lies', teaser: 'Everyone in Winden is protecting something. The search for answers peels back the first layer.', mod: 'Raises questions about who\'s really telling the truth.', full: 'Digs into the investigation while quietly building the case that no one\'s alibi is quite solid.' },
+        { n: 3, de: 'Gestern und Heute', en: 'Yesterday and Today', teaser: 'A different year, the same fear. This town has been here before, whether it remembers or not.', mod: 'First hints that different years are more connected than they should be.', full: 'Starts weaving between two time periods, letting patterns emerge before characters notice them.' },
+        { n: 4, de: 'Doppelleben', en: 'Double Lives', teaser: 'Behind closed doors, nobody is quite who they seem at breakfast.', mod: 'Reveals private lives at odds with public ones.', full: 'Peels back several characters\' secrets, showing how much Winden hides behind closed doors.' },
+        { n: 5, de: 'Wahrheiten', en: 'Truths', teaser: 'Some questions finally get answered. The answers only raise more of them.', mod: 'A first real answer arrives — with a catch.', full: 'Delivers a genuine investigative breakthrough that reframes what\'s been happening.' },
+        { n: 6, de: 'Sic Mundus Creatus Est', en: 'Thus the World Was Made', teaser: 'A phrase, a symbol, a group with a purpose nobody outside it understands yet.', mod: 'Introduces the name Sic Mundus and its symbol.', full: 'Connects a mysterious order to the town\'s deeper mystery for the first time explicitly.' },
+        { n: 7, de: 'Kreuzwege', en: 'Crossroads', teaser: 'Choices start to matter in ways none of the characters can see yet.', mod: 'Choices start splitting character paths worth tracking.', full: 'A turning point where several characters make decisions the show keeps returning to.' },
+        { n: 8, de: 'Was man sät...', en: 'As You Sow, So Shall You Reap', teaser: 'Consequences catch up with people — some from further back than expected.', mod: 'Past decisions come due.', full: 'Consequences from earlier choices catch up with more than one character at once.' },
+        { n: 9, de: 'Alles ist jetzt', en: 'Everything Is Now', teaser: 'The wall between "then" and "now" gets thinner than anyone is comfortable with.', mod: 'Timelines start visibly bleeding into each other.', full: 'Collapses the separation between time periods further, ahead of the finale.' },
+        { n: 10, de: 'Alpha und Omega', en: 'Alpha and Omega', teaser: 'The first cycle closes on a question that redefines everything that came before it.', mod: 'The season\'s central twist lands.', full: 'Delivers a finale reveal that recontextualizes nearly everything from the first nine episodes.' },
+      ]
+    },
+    {
+      id: 2,
+      name: 'Season Two',
+      subtitle: 'Dark Matter',
+      meta: 'Understanding of the cycle deepens, a countdown begins, and new factions want very different endings.',
+      episodes: [
+        { n: 1, de: 'Anfänge und Enden', en: 'Beginnings and Endings', teaser: 'A new chapter opens somewhere the story hasn\'t shown you yet.', mod: 'Opens in a place, or time, the show hasn\'t shown yet.', full: 'Widens the map, introducing a new vantage point on the same unfolding events.' },
+        { n: 2, de: 'Dunkle Materie', en: 'Dark Matter', teaser: 'The rules of what\'s possible get rewritten again.', mod: 'Expands what "possible" means for the story.', full: 'Adds new mechanics to the show\'s take on time and cause-and-effect.' },
+        { n: 3, de: 'Gespenster', en: 'Ghosts', teaser: 'The past isn\'t finished with anyone — least of all the people who thought they\'d escaped it.', mod: 'The past resurfaces for someone who thought it was behind them.', full: 'Forces a reckoning between a character and events from their own history.' },
+        { n: 4, de: 'Die Reisenden', en: 'The Travelers', teaser: 'More people know how to move through time than anyone realized — and they don\'t all want the same thing.', mod: 'More than one group is moving through time now.', full: 'Reveals competing interests among people who can traverse timelines, not just one faction.' },
+        { n: 5, de: 'Vom Suchen und Finden', en: 'Seeking and Finding', teaser: 'A search finally connects dots someone has been avoiding for a long time.', mod: 'A long search finally pays off.', full: 'Connects threads that have been dangling since earlier episodes into a clearer picture.' },
+        { n: 6, de: 'Ein unendlicher Kreis', en: 'An Infinite Circle', teaser: 'The true shape of the cycle becomes impossible to ignore.', mod: 'The "loop" becomes explicit, not just implied.', full: 'Makes the cyclical structure of the story visible to the characters themselves.' },
+        { n: 7, de: 'Der weiße Teufel', en: 'The White Devil', teaser: 'Someone crosses a line that can\'t be uncrossed, in more than one timeframe.', mod: 'A major line gets crossed.', full: 'A character commits to an action with consequences across more than one timeframe.' },
+        { n: 8, de: 'Enden und Anfänge', en: 'Endings and Beginnings', teaser: 'The clock everyone\'s been racing against finally runs out — and something else begins.', mod: 'A deadline the season\'s been building toward arrives.', full: 'Closes season two on a cliffhanger that resets a lot of assumptions.' },
+      ]
+    },
+    {
+      id: 3,
+      name: 'Season Three',
+      subtitle: 'Adam & Eve',
+      meta: 'Parallel worlds surface, two philosophies of fate collide, and the story reaches for its origin.',
+      episodes: [
+        { n: 1, de: 'Déjà-vu', en: 'Déjà-vu', teaser: 'A familiar town turns out to be somewhere else entirely.', mod: 'Familiar setting, unfamiliar rules.', full: 'Introduces a parallel version of Winden that isn\'t quite the one you know.' },
+        { n: 2, de: 'Die Überlebende', en: 'The Survivor', teaser: 'Someone who shouldn\'t still be standing is exactly that.', mod: 'Someone survives against the odds.', full: 'Follows a character who shouldn\'t have made it, and what that means going forward.' },
+        { n: 3, de: 'Adam und Eva', en: 'Adam and Eve', teaser: 'Two sides of the same fight finally get names.', mod: 'Two long-hinted figures are finally named outright.', full: 'Puts names to the show\'s two biggest shadow figures for the first time.' },
+        { n: 4, de: 'Der Ursprung', en: 'The Origin', teaser: 'The story reaches back toward whatever started all of this in the first place.', mod: 'The story reaches for its actual beginning.', full: 'Pushes toward the root cause behind everything across every timeline.' },
+        { n: 5, de: 'Leben und Tod', en: 'Life and Death', teaser: 'The stakes stop being abstract for the people at the center of it.', mod: 'The cost of all this becomes personal.', full: 'Makes the stakes concrete for characters who\'ve mostly been chasing abstractions.' },
+        { n: 6, de: 'Licht und Schatten', en: 'Light and Shadow', teaser: 'Two ideas about how the world works go head to head.', mod: 'Two philosophies about fate go head-to-head.', full: 'Stages a direct confrontation between opposing views on whether any of this can change.' },
+        { n: 7, de: 'Zwischen der Zeit', en: 'Between the Time', teaser: 'The gap between what\'s fixed and what\'s still possible narrows to almost nothing.', mod: 'Fixed points and free choices get harder to tell apart.', full: 'Narrows the gap between what\'s determined and what\'s still open to change.' },
+        { n: 8, de: 'Das Paradies', en: 'Paradise', teaser: 'Everything the story has been building toward finally resolves.', mod: 'The finale answers what the whole series has been asking.', full: 'Resolves the series\' core mystery and the fates of its central characters — no further detail here on purpose.' },
+      ]
+    }
+  ];
+
+  let spoilerTier = 'safe';
+  const watched = new Set(); // in-memory only, "key" = "s-e"
+  let currentSeasonIndex = 0;
+
+  const dropdownEl = document.getElementById('seasonDropdown');
+  const dropdownToggle = document.getElementById('dropdownToggle');
+  const dropdownLabel = document.getElementById('dropdownLabel');
+  const dropdownMenu = document.getElementById('dropdownMenu');
+  const episodeListEl = document.getElementById('episodeList');
+
+  const playIcon = `<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="rgba(255,255,255,0.14)" stroke="rgba(255,255,255,0.6)"/><path d="M10 8l6 4-6 4V8z" fill="#F1EEFB"/></svg>`;
+  const checkIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
+  seasons.forEach((season, i) => {
+    const item = document.createElement('div');
+    item.className = 'dropdown-item' + (i === 0 ? ' active' : '');
+    item.textContent = `Season ${season.id}: ${season.subtitle}`;
+    item.addEventListener('click', () => selectSeason(i));
+    dropdownMenu.appendChild(item);
+  });
+
+  dropdownToggle.addEventListener('click', () => dropdownEl.classList.toggle('open'));
+  document.addEventListener('click', (e) => {
+    if (!dropdownEl.contains(e.target)) dropdownEl.classList.remove('open');
+  });
+
+  function selectSeason(i) {
+    currentSeasonIndex = i;
+    const season = seasons[i];
+    dropdownLabel.textContent = `Season ${season.id}`;
+    document.querySelectorAll('.dropdown-item').forEach((el, idx) => el.classList.toggle('active', idx === i));
+    dropdownEl.classList.remove('open');
+    renderEpisodeList(season);
+  }
+
+  function renderEpisodeList(season) {
+    episodeListEl.innerHTML = '';
+    season.episodes.forEach(ep => {
+      const key = `${season.id}-${ep.n}`;
+      const row = document.createElement('div');
+      row.className = 'episode-row';
+      let tierLine = '';
+      if (spoilerTier === 'moderate') tierLine = `<div class="ep-tier-line">Introduces: ${ep.mod}</div>`;
+      if (spoilerTier === 'full') tierLine = `<div class="ep-tier-line">${ep.full}</div>`;
+      row.innerHTML = `
+        <div class="ep-thumb">
+          <span class="ep-thumb-num">${String(ep.n).padStart(2, '0')}</span>
+          <div class="ep-thumb-play">${playIcon}</div>
+        </div>
+        <div class="ep-info">
+          <button class="ep-watch-btn ${watched.has(key) ? 'watched' : ''}" title="Mark as watched">${watched.has(key) ? checkIcon : ''}</button>
+          <div class="ep-info-head">
+            <span class="ep-num-label">${ep.n}.</span>
+            <span class="ep-title-de">${ep.de}</span>
+          </div>
+          <div class="ep-title-en">${ep.en}</div>
+          <p class="ep-teaser">${ep.teaser}</p>
+          ${tierLine}
+        </div>
+      `;
+      const watchBtn = row.querySelector('.ep-watch-btn');
+      watchBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (watched.has(key)) { watched.delete(key); watchBtn.classList.remove('watched'); watchBtn.innerHTML = ''; }
+        else { watched.add(key); watchBtn.classList.add('watched'); watchBtn.innerHTML = checkIcon; }
+      });
+      episodeListEl.appendChild(row);
+    });
+  }
+
+  document.querySelectorAll('.spoiler-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      spoilerTier = btn.dataset.tier;
+      document.querySelectorAll('.spoiler-btn').forEach(b => b.classList.toggle('active', b === btn));
+      renderEpisodeList(seasons[currentSeasonIndex]);
+    });
+  });
+
+  selectSeason(0);
+
+  // nav smooth-scroll
+  document.querySelectorAll('.nav-link[data-target]').forEach(link => {
+    link.addEventListener('click', () => {
+      document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+      link.classList.add('active');
+      const target = document.querySelector(link.dataset.target);
+      if (target) target.scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+
+  // ==================================================================
+  // CHARACTERS — factual (actor / family / basic S1 role) only.
+  // ==================================================================
+  const characters = [
+    { name: 'Jonas Kahnwald', actor: 'Louis Hofmann', family: 'Kahnwald', occupation: 'Student', status: 'Present, 2019', bio: 'A Winden teenager returning to school in 2019 not long after a loss in his family.', arc: 'Spends the series trying to understand — and eventually navigate — Winden\'s time distortions.' },
+    { name: 'Martha Nielsen', actor: 'Lisa Vicari', family: 'Nielsen', occupation: 'Student', status: 'Present, 2019', bio: "Ulrich and Katharina's daughter, a classmate of Jonas's.", arc: 'Becomes far more central to the story than a first watch suggests.' },
+    { name: 'Ulrich Nielsen', actor: 'Oliver Masucci', family: 'Nielsen', occupation: 'Police detective', status: 'Present, 2019', bio: 'A police detective in Winden, married to Katharina, father to Mikkel, Magnus, and Martha.', arc: 'Drives much of the early investigation, at real personal cost.' },
+    { name: 'Katharina Nielsen', actor: 'Jördis Triebel', family: 'Nielsen', occupation: "Deputy head, Winden school", status: 'Present, 2019', bio: "Ulrich's wife and the local school's deputy head.", arc: 'Holds the Nielsen household together as things unravel around it.' },
+    { name: 'Magnus Nielsen', actor: 'Moritz Jahn', family: 'Nielsen', occupation: 'Student', status: 'Present, 2019', bio: 'The eldest Nielsen child, often looking after his younger siblings.', arc: 'Carries more responsibility than a teenager should have to.' },
+    { name: 'Mikkel Nielsen', actor: 'Daan Lennard Liebrenz', family: 'Nielsen', occupation: 'Student', status: 'Missing, 2019', bio: 'The youngest Nielsen child, nine years old when the series begins.', arc: 'His disappearance is the event that starts everything.' },
+    { name: 'Charlotte Doppler', actor: 'Karoline Eichhorn', family: 'Doppler', occupation: 'Chief of police', status: 'Present, 2019', bio: 'Head of the local police, married to Peter, mother to Franziska and Elisabeth.', arc: 'Ends up closer to the center of Winden\'s mystery than she expects.' },
+    { name: 'Peter Doppler', actor: 'Stephan Kampwirth', family: 'Doppler', occupation: 'Psychotherapist', status: 'Present, 2019', bio: "A psychotherapist in Winden and Charlotte's husband.", arc: 'A quieter storyline that turns out to matter more than it first seems.' },
+    { name: 'Franziska Doppler', actor: 'Gina Alice Stiebitz', family: 'Doppler', occupation: 'Student', status: 'Present, 2019', bio: "The Dopplers' teenage daughter, part of the same friend group as Magnus and Bartosz.", arc: 'Watches her friend group get pulled apart by things she can\'t explain.' },
+    { name: 'Helge Doppler', actor: 'Hermann Beyer', family: 'Doppler', occupation: 'Retired, formerly power plant', status: 'Present, elderly', bio: 'An older Winden resident connected to the history of the nuclear power plant.', arc: 'Carries decades of history that the show unpacks slowly.' },
+    { name: 'Regina Tiedemann', actor: 'Deborah Kaufmann', family: 'Tiedemann', occupation: 'Hotel owner', status: 'Present, 2019', bio: "Runs Winden's only hotel, and is Bartosz's mother.", arc: 'One of the show\'s more grounded, human threads.' },
+    { name: 'Bartosz Tiedemann', actor: 'Paul Lux', family: 'Tiedemann', occupation: 'Student', status: 'Present, 2019', bio: "A classmate of Jonas and Martha's, and Regina's son.", arc: 'Gets drawn toward Sic Mundus earlier than his friends realize.' },
+    { name: 'Claudia Tiedemann', actor: 'Julika Jenkins', family: 'Tiedemann', occupation: 'Power plant director', status: 'Present, 2019', bio: "Runs the Winden nuclear power plant, and Regina's mother.", arc: 'Becomes one of the sharpest minds trying to actually solve Winden\'s puzzle.' },
+    { name: 'Egon Tiedemann', actor: 'Christian Pätzold', family: 'Tiedemann', occupation: 'Police officer', status: 'Earlier timeline', bio: "A Winden police officer in an earlier timeline, Claudia's father.", arc: 'Investigates a version of the same mystery decades before Ulrich does.' },
+    { name: 'Hannah Kahnwald', actor: 'Maja Schöne', family: 'Kahnwald', occupation: 'Real estate agent', status: 'Present, 2019', bio: "Jonas's mother, and a lifelong Winden resident.", arc: 'A lonelier, more complicated figure than she first appears.' },
+    { name: 'Noah', actor: 'Mark Waschke', family: 'Sic Mundus', occupation: 'Priest', status: 'Present, 2019', bio: 'A priest who arrives in Winden with a calm exterior and an agenda nobody else is aware of yet.', arc: 'Not what he presents himself as — the show takes its time revealing why.' },
+    { name: 'The Stranger', actor: 'Andreas Pietschmann', family: 'Unaffiliated', occupation: 'Unknown', status: 'Present, 2019', bio: "A mysterious figure who checks into Regina's hotel not long after the town's disappearance begins.", arc: 'One of the show\'s central "who is this, really" threads.' },
+    { name: 'Adam', actor: 'Dietrich Hollinderbäumer', family: 'Sic Mundus', occupation: 'Leader, Sic Mundus', status: 'Unclear timeline', bio: 'A masked, enigmatic figure connected to a group called Sic Mundus, first mentioned early in the series.', arc: 'Convinced he knows how this all has to end.' },
+  ];
+
+  const charNotes = {}; // personal notes per character, in-memory only
+
+  const charGrid = document.getElementById('charGrid');
+  const charModalBackdrop = document.getElementById('charModalBackdrop');
+  const charModal = document.getElementById('charModal');
+
+  characters.forEach(c => {
+    const initials = c.name.split(' ').map(w => w[0]).slice(0, 2).join('');
+    const card = document.createElement('div');
+    card.className = 'char-card';
+    card.innerHTML = `
+      <div class="char-avatar">${initials}</div>
+      <div class="char-name">${c.name}</div>
+      <div class="char-family">${c.family}</div>
+    `;
+    card.addEventListener('click', () => {
+      openCharModal(c, initials);
+    });
+    charGrid.appendChild(card);
+  });
+  charModalBackdrop.addEventListener('click', (e) => {
+    if (e.target === charModalBackdrop) charModalBackdrop.classList.remove('show');
+  });
+
+  function openCharModal(c, initials) {
+    const tierTags = { safe: '🟢 Safe', moderate: '🟡 Moderate', full: '🔴 Full' };
+    const connections = relEdges.filter(([a, b]) => a === c.name || b === c.name)
+      .map(([a, b, label]) => (a === c.name ? b : a) + ' — ' + label);
+
+    let extra = '';
+    if (spoilerTier === 'moderate' || spoilerTier === 'full') {
+      extra += `<div class="char-modal-tags"><span class="char-tag">${c.occupation}</span><span class="char-tag">${c.status}</span></div>`;
+    }
+    if (spoilerTier === 'full') {
+      extra += `<p class="char-modal-bio" style="margin-top:14px;color:var(--gold)">${c.arc}</p>`;
+    }
+    if (connections.length) {
+      extra += `<div class="char-modal-tags" style="margin-top:14px">${connections.map(cn => `<span class="char-tag">${cn}</span>`).join('')}</div>`;
+    }
+
+    charModal.innerHTML = `
+      <button class="char-modal-close" id="charModalClose">&times;</button>
+      <div class="char-modal-avatar">${initials}</div>
+      <div class="char-modal-name">${c.name}</div>
+      <div class="char-modal-actor">Played by ${c.actor}</div>
+      <p class="char-modal-bio">${c.bio}</p>
+      <div class="char-modal-tags">
+        <span class="char-tag">${c.family} Family</span>
+        <span class="char-tag">First appears: S1</span>
+        <span class="char-tag">Viewing: ${tierTags[spoilerTier]}</span>
+      </div>
+      ${extra}
+      <textarea class="char-notes" id="charNotesBox" placeholder="Your notes on ${c.name}...">${charNotes[c.name] || ''}</textarea>
+    `;
+    charModalBackdrop.classList.add('show');
+    document.getElementById('charModalClose').addEventListener('click', () => charModalBackdrop.classList.remove('show'));
+    document.getElementById('charNotesBox').addEventListener('input', (e) => { charNotes[c.name] = e.target.value; });
+  }
+
+  // ==================================================================
+  // FAMILY TREE — surface-level members only; deeper links stay vague
+  // even when "unlocked", by design.
+  // ==================================================================
+  const families = [
+    { name: 'Nielsen', tag: 'Police & Household', members: ['Ulrich Nielsen', 'Katharina Nielsen', 'Magnus Nielsen', 'Martha Nielsen', 'Mikkel Nielsen', 'Tronte Nielsen'] },
+    { name: 'Kahnwald', tag: 'The Newcomers', members: ['Jonas Kahnwald', 'Hannah Kahnwald', 'Michael Kahnwald'] },
+    { name: 'Doppler', tag: 'Power Plant & Practice', members: ['Charlotte Doppler', 'Peter Doppler', 'Franziska Doppler', 'Elisabeth Doppler', 'Helge Doppler'] },
+    { name: 'Tiedemann', tag: 'The Hotel & The Plant', members: ['Regina Tiedemann', 'Bartosz Tiedemann', 'Claudia Tiedemann', 'Egon Tiedemann'] },
+  ];
+
+  const treeGrid = document.getElementById('treeGrid');
+  families.forEach(f => {
+    const card = document.createElement('div');
+    card.className = 'tree-family';
+    card.innerHTML = `
+      <div class="tree-family-name">${f.name}</div>
+      <span class="tree-family-tag">${f.tag}</span>
+      ${f.members.map(m => `<div class="tree-member"><span class="tree-dot"></span>${m}</div>`).join('')}
+      <div class="tree-locked" data-locked="true">🔒 Deeper connections — tap to unlock</div>
+    `;
+    const lockEl = card.querySelector('.tree-locked');
+    lockEl.addEventListener('click', () => {
+      const isLocked = lockEl.dataset.locked === 'true';
+      lockEl.dataset.locked = isLocked ? 'false' : 'true';
+      lockEl.classList.toggle('unlocked', isLocked);
+      lockEl.textContent = isLocked
+        ? '✦ Some of these members share more than blood — the show explains how, later.'
+        : '🔒 Deeper connections — tap to unlock';
+    });
+    treeGrid.appendChild(card);
+  });
+
+  // ==================================================================
+  // MYSTERY TRACKER — personal progress only, in-memory.
+  // ==================================================================
+  const mysteries = [
+    'Where did Mikkel disappear to?',
+    'Who is the Stranger, and why does he know so much about Winden?',
+    "What's inside the cave in the forest?",
+    'Why do the missing children all connect back to 1986?',
+    'What does the yellow raincoat have to do with any of this?',
+    'Who — or what — is Sic Mundus?',
+    'Why does everyone in Winden seem to be hiding something?',
+    'What really happened at the power plant?',
+  ];
+  const mysteryGrid = document.getElementById('mysteryGrid');
+  mysteries.forEach(q => {
+    const card = document.createElement('div');
+    card.className = 'mystery-card';
+    card.innerHTML = `
+      <div class="mystery-orb"></div>
+      <div class="mystery-q">${q}</div>
+      <div class="mystery-status">Unsolved</div>
+    `;
+    card.addEventListener('click', () => {
+      const solved = card.classList.toggle('solved');
+      card.querySelector('.mystery-status').textContent = solved ? 'Solved by you' : 'Unsolved';
+    });
+    mysteryGrid.appendChild(card);
+  });
+
+  // ==================================================================
+  // SYMBOL & MOTIF TRACKER
+  // ==================================================================
+  const symbols = [
+    { name: 'The Triquetra', hint: 'A three-looped knot that shows up on walls, jewelry, and documents around town.', meaning: 'Tied to Sic Mundus\'s whole philosophy of three interlinked things — worth watching for what those three turn out to be.' },
+    { name: 'The Yellow Raincoat', hint: 'A distinctive piece of clothing that resurfaces more than once, worn by more than one person.', meaning: 'A visual thread the show uses to link moments across decades — pay attention to who\'s wearing it and when.' },
+    { name: 'The Masked Figure', hint: 'A gas-mask-wearing figure introduced partway through the series.', meaning: 'Not just a scare tactic — the mask marks a specific role people take on, not a specific person.' },
+    { name: 'Clocks & Pocket Watches', hint: 'Winden is unusually preoccupied with exact, precise time.', meaning: 'A constant visual reminder of the show\'s real subject — pay attention to what time each clock actually shows.' },
+    { name: 'Cave Wall Markings', hint: 'Symbols scratched into the cave walls that predate everyone currently in town.', meaning: 'Evidence that whatever\'s happening in Winden has been happening for a very long time.' },
+    { name: 'The Barrels', hint: 'Sealed barrels that turn up in more than one storyline.', meaning: 'Connect two plotlines you might not expect to be related at first.' },
+  ];
+
+  const symbolSpotted = new Set();
+  const symbolGrid = document.getElementById('symbolGrid');
+  symbols.forEach(s => {
+    const card = document.createElement('div');
+    card.className = 'mystery-card';
+    card.innerHTML = `
+      <div class="mystery-orb"></div>
+      <div class="mystery-q">${s.name}</div>
+      <div class="mystery-status">Not yet spotted</div>
+      <div class="symbol-meaning">${s.meaning}</div>
+    `;
+    card.title = s.hint;
+    card.addEventListener('click', () => {
+      const spotted = card.classList.toggle('solved');
+      card.querySelector('.mystery-status').textContent = spotted ? 'Spotted' : 'Not yet spotted';
+      if (spotted) symbolSpotted.add(s.name); else symbolSpotted.delete(s.name);
+    });
+    symbolGrid.appendChild(card);
+  });
+
+  // ==================================================================
+  // VIEWING JOURNAL — personal, in-memory notes only (no server, no
+  // localStorage — see the on-page note). Structure pulled from the
+  // Season 1-3 companion templates: Rewatch Checklist, Theme Journal,
+  // Finale Reflection.
+  // ==================================================================
+  const journalData = {}; // key -> text, in-memory only
+
+  function buildJournalFields(containerId, fields) {
+    const container = document.getElementById(containerId);
+    fields.forEach(label => {
+      const key = containerId + ':' + label;
+      const wrap = document.createElement('div');
+      wrap.innerHTML = `
+        <div class="journal-field-label">${label}</div>
+        <textarea class="journal-textarea" data-key="${key}" placeholder="Write your thoughts on ${label.toLowerCase()}..."></textarea>
+      `;
+      const ta = wrap.querySelector('textarea');
+      ta.addEventListener('input', (e) => { journalData[key] = e.target.value; });
+      container.appendChild(wrap);
+    });
+  }
+
+  buildJournalFields('journalRewatch', ['New clues', 'Character behavior', 'Hidden details']);
+  buildJournalFields('journalThemes', ['Fate', 'Free will', 'Identity', 'Family', 'Sacrifice', 'Time', 'Choice']);
+  buildJournalFields('journalFinale', ['Biggest revelations', 'Remaining questions', 'Favorite moments']);
+
+  // ==================================================================
+  // TIMELINE EXPLORER — years as stars, per the original design doc.
+  // Kept vague/high-level; no specific event outcomes revealed.
+  // ==================================================================
+  const timelineYears = [
+    { year: '1888', supernova: false, blurb: 'The year "Sic Mundus Creatus Est" was first inscribed — the founding of a mysterious order in Winden.', chars: 'Early members of Sic Mundus' },
+    { year: '1921', supernova: false, blurb: "A young priest's story begins here, decades before anyone in Winden would recognize his name.", chars: 'A young Noah, among others' },
+    { year: '1953', supernova: false, blurb: 'The Tiedemann and Doppler families are already tangled in the town\'s routines — and its secrets.', chars: 'Young Claudia, young Egon, a teenage Tronte' },
+    { year: '1986', supernova: true, blurb: 'A missing-child case shakes Winden to its core, echoing forward for over thirty years.', chars: 'Teenage Ulrich, Katharina, Regina, Claudia, and others' },
+    { year: '2019', supernova: true, blurb: "The present-day disappearance that everything DarkVerse is built around.", chars: 'Jonas, Martha, Magnus, Franziska, Bartosz, and their families' },
+    { year: '2052', supernova: false, blurb: 'A future Winden, shaped by an event nobody in the present has explained yet.', chars: 'Older versions of familiar faces' },
+    { year: '2053', supernova: false, blurb: 'The far edge of the timeline the show shows you directly.', chars: 'Survivors of whatever comes before' },
+    { year: 'Origin', supernova: true, blurb: "Neither 2019 nor any of the years above — a separate strand the story eventually reaches.", chars: 'Kept deliberately unlisted here' },
+  ];
+
+  const timelineTrack = document.getElementById('timelineTrack');
+  const timelineDetail = document.getElementById('timelineDetail');
+
+  timelineYears.forEach((y, i) => {
+    const node = document.createElement('div');
+    node.className = 'timeline-node' + (y.supernova ? ' supernova' : '') + (i === 0 ? ' active' : '');
+    node.innerHTML = `<div class="timeline-star"></div><div class="timeline-year">${y.year}</div>`;
+    node.addEventListener('click', () => {
+      document.querySelectorAll('.timeline-node').forEach(n => n.classList.remove('active'));
+      node.classList.add('active');
+      renderTimelineDetail(y);
+    });
+    timelineTrack.appendChild(node);
+  });
+
+  function renderTimelineDetail(y) {
+    timelineDetail.innerHTML = `
+      <div class="td-year">${y.year}</div>
+      <p class="td-blurb">${y.blurb}</p>
+      <div class="td-chars">PRESENT: ${y.chars}</div>
+    `;
+  }
+  renderTimelineDetail(timelineYears[0]);
+
+  // ==================================================================
+  // WORLDS & ORGANIZATIONS
+  // ==================================================================
+  const worlds = [
+    { name: "Adam's World", desc: 'One strand of the story, shaped by a conviction that the cycle is fixed and can only be ended, not escaped.', meta: 'Philosophy: Determinism' },
+    { name: "Eva's World", desc: 'A parallel strand, shaped by the opposite conviction — that the cycle can be preserved, and even multiplied.', meta: 'Philosophy: Continuation' },
+    { name: 'Origin World', desc: 'The strand underneath both of the above — where the story eventually traces its actual root cause.', meta: 'Introduced: Season 3' },
+  ];
+  const orgs = [
+    { name: 'Sic Mundus', desc: 'A secretive order devoted to mastering the flow of time, drawing members from many different points in Winden\'s history.', meta: 'Founded: 1888' },
+    { name: 'Erit Lux', desc: 'A countermovement working against Sic Mundus\'s plans, with its own view of how — or whether — the cycle should end.', meta: 'First appears: Season 3' },
+  ];
+
+  const worldsGrid = document.getElementById('worldsGrid');
+  const orgsGrid = document.getElementById('orgsGrid');
+  worlds.forEach(w => {
+    const card = document.createElement('div');
+    card.className = 'lore-card';
+    card.innerHTML = `<div class="lore-card-name">${w.name}</div><p class="lore-card-desc">${w.desc}</p><div class="lore-card-meta">${w.meta}</div>`;
+    worldsGrid.appendChild(card);
+  });
+  orgs.forEach(o => {
+    const card = document.createElement('div');
+    card.className = 'lore-card';
+    card.innerHTML = `<div class="lore-card-name">${o.name}</div><p class="lore-card-desc">${o.desc}</p><div class="lore-card-meta">${o.meta}</div>`;
+    orgsGrid.appendChild(card);
+  });
+
+  // ==================================================================
+  // LOCATIONS MAP — original abstract icons, no depicted stills.
+  // ==================================================================
+  const locations = [
+    { name: 'Nuclear Plant', desc: "Winden's power plant — a workplace, a source of tension, and the site of a very particular disappearance.", icon: '<circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/>' },
+    { name: 'The Caves', desc: 'A cave system in the forest, far stranger on the inside than the outside suggests.', icon: '<path d="M3 20c2-8 6-14 9-14s7 6 9 14"/><path d="M8 20c1-5 2.5-9 4-9s3 4 4 9"/>' },
+    { name: 'The Bunker', desc: 'A hidden structure connected to the plant, largely unknown to most of the town.', icon: '<rect x="4" y="9" width="16" height="10" rx="1"/><path d="M8 9V6a4 4 0 018 0v3"/>' },
+    { name: 'Church', desc: 'St. Christophorus — home to more than just Sunday services.', icon: '<path d="M12 3v6M9 6h6"/><path d="M5 21V11l7-5 7 5v10"/><path d="M9 21v-6h6v6"/>' },
+    { name: 'Police Station', desc: "Where Ulrich and Charlotte spend most of their working hours trying to make sense of it all.", icon: '<path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z"/>' },
+    { name: 'School', desc: "Winden's school — Jonas, Martha, Bartosz, and Franziska's world outside home.", icon: '<path d="M2 9l10-5 10 5-10 5-10-5z"/><path d="M6 11v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/>' },
+    { name: 'Hospital', desc: "Where Winden comes when the day's events get literal.", icon: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M12 8v8M8 12h8"/>' },
+    { name: 'The Forest', desc: 'The woods surrounding Winden — the road most of this story runs through, one way or another.', icon: '<path d="M12 2l5 8h-3l4 6h-4v6h-4v-6H6l4-6H7z"/>' },
+    { name: 'Family Houses', desc: 'The Nielsen, Kahnwald, Doppler, and Tiedemann households — four homes tangled in every timeline.', icon: '<path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/>' },
+  ];
+
+  const locGrid = document.getElementById('locGrid');
+  locations.forEach(l => {
+    const card = document.createElement('div');
+    card.className = 'loc-card';
+    card.innerHTML = `
+      <svg class="loc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">${l.icon}</svg>
+      <div class="loc-name">${l.name}</div>
+      <p class="loc-desc">${l.desc}</p>
+    `;
+    locGrid.appendChild(card);
+  });
+
+
+  // ==================================================================
+  // AI ROLEPLAY — live calls to the Anthropic API, original character
+  // voices only. No reproduced dialogue, no spoilers, kept cryptic.
+  // ==================================================================
+  const personas = [
+    {
+      key: 'stranger',
+      label: 'The Stranger',
+      greeting: "You've found a way to reach me. That's... earlier than I expected. What is it you want to know?",
+      system: "You are roleplaying as an original AI persona called 'The Stranger' for a non-commercial fan companion app about the Netflix series Dark. Speak calmly, cryptically, and a little weary, as someone who has lived through the same events many times. Discuss themes of time, fate, and choice in your own original words. Never quote or closely paraphrase actual dialogue from the show. Never reveal specific plot twists, character fates, or spoilers from any season — deflect spoiler questions gracefully and in character. Keep replies under 70 words."
+    },
+    {
+      key: 'claudia',
+      label: 'Claudia Tiedemann',
+      greeting: 'You want answers. Everyone in this town does. I can tell you how I think about time — but not what happens in it.',
+      system: "You are roleplaying as an original AI persona called 'Claudia Tiedemann' for a non-commercial fan companion app about the Netflix series Dark. Speak precisely, a little guarded, intellectually curious about causality, determinism, and control. Use your own original words only — never quote or closely paraphrase actual show dialogue. Never reveal plot twists or spoilers; redirect spoiler questions in character. Keep replies under 70 words."
+    },
+    {
+      key: 'noah',
+      label: 'Noah',
+      greeting: 'Peace be with you, traveler. Faith is easier when you already know how the story ends — or think you do.',
+      system: "You are roleplaying as an original AI persona called 'Noah' for a non-commercial fan companion app about the Netflix series Dark. Speak in a calm, gentle, faintly unsettling tone, touching on themes of faith, destiny, and paradise in your own original words. Never quote or closely paraphrase actual show dialogue. Never reveal plot twists, character allegiances, or spoilers; deflect gracefully in character. Do not promote any real-world religious or extremist ideology — keep it clearly fictional and benign. Keep replies under 70 words."
+    }
+  ];
+
+  const chatHistories = {}; // in-memory per persona: [{role, content}]
+  let activePersona = personas[0].key;
+
+  const personaRow = document.getElementById('personaRow');
+  const commMessages = document.getElementById('commMessages');
+  const commInput = document.getElementById('commInput');
+  const commSend = document.getElementById('commSend');
+
+  personas.forEach(p => {
+    const btn = document.createElement('button');
+    btn.className = 'comm-persona' + (p.key === activePersona ? ' active' : '');
+    btn.textContent = p.label;
+    btn.addEventListener('click', () => switchPersona(p.key));
+    personaRow.appendChild(btn);
+  });
+
+  function switchPersona(key) {
+    activePersona = key;
+    document.querySelectorAll('.comm-persona').forEach((el, i) => el.classList.toggle('active', personas[i].key === key));
+    if (!chatHistories[key]) {
+      chatHistories[key] = [{ role: 'assistant', content: personas.find(p => p.key === key).greeting }];
+    }
+    renderMessages();
+  }
+
+  function renderMessages() {
+    commMessages.innerHTML = '';
+    chatHistories[activePersona].forEach(m => {
+      const bubble = document.createElement('div');
+      bubble.className = 'comm-msg ' + (m.role === 'user' ? 'me' : 'them');
+      bubble.textContent = m.content;
+      commMessages.appendChild(bubble);
+    });
+    commMessages.scrollTop = commMessages.scrollHeight;
+  }
+
+  function showTyping() {
+    const t = document.createElement('div');
+    t.className = 'comm-typing';
+    t.id = 'commTyping';
+    t.innerHTML = '<span></span><span></span><span></span>';
+    commMessages.appendChild(t);
+    commMessages.scrollTop = commMessages.scrollHeight;
+  }
+  function hideTyping() {
+    const t = document.getElementById('commTyping');
+    if (t) t.remove();
+  }
+
+  async function sendMessage() {
+    const text = commInput.value.trim();
+    if (!text) return;
+    commInput.value = '';
+    commSend.disabled = true;
+
+    const persona = personas.find(p => p.key === activePersona);
+    chatHistories[activePersona].push({ role: 'user', content: text });
+    renderMessages();
+    showTyping();
+
+    try {
+      const apiMessages = chatHistories[activePersona]
+        .filter((m, i) => !(i === 0 && m.role === 'assistant')) // don't resend the scripted greeting as history
+        .map(m => ({ role: m.role, content: m.content }));
+
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-6',
+          max_tokens: 200,
+          system: persona.system,
+          messages: apiMessages.length ? apiMessages : [{ role: 'user', content: text }]
+        })
+      });
+      const data = await response.json();
+      const textBlocks = (data.content || []).filter(b => b.type === 'text').map(b => b.text);
+      const reply = textBlocks.join(' ').trim() || "...the signal's breaking up. Try again.";
+      hideTyping();
+      chatHistories[activePersona].push({ role: 'assistant', content: reply });
+      renderMessages();
+    } catch (err) {
+      hideTyping();
+      chatHistories[activePersona].push({ role: 'assistant', content: "...the connection across time flickered out. Try sending that again." });
+      renderMessages();
+    } finally {
+      commSend.disabled = false;
+    }
+  }
+
+  commSend.addEventListener('click', sendMessage);
+  commInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') sendMessage(); });
+
+  switchPersona(activePersona);
+
+  // ==================================================================
+  // GLOBAL SEARCH — indexes characters, episodes, locations, mysteries,
+  // timeline years, worlds, and organizations. Click a result to jump
+  // straight to it (and open its detail where relevant).
+  // ==================================================================
+  const searchIndex = [];
+
+  characters.forEach(c => searchIndex.push({
+    type: 'Character', title: c.name, sub: `${c.family} · played by ${c.actor}`,
+    action: () => { document.getElementById('characters').scrollIntoView({ behavior: 'smooth' }); flash(document.getElementById('charGrid')); }
+  }));
+
+  seasons.forEach(s => s.episodes.forEach(ep => searchIndex.push({
+    type: 'Episode', title: `S${s.id}E${ep.n} · ${ep.de}`, sub: ep.en,
+    action: () => {
+      document.getElementById('selector').scrollIntoView({ behavior: 'smooth' });
+      selectSeason(seasons.indexOf(s));
+      flash(episodeListEl);
+    }
+  })));
+
+  locations.forEach(l => searchIndex.push({
+    type: 'Location', title: l.name, sub: l.desc,
+    action: () => { document.getElementById('locations').scrollIntoView({ behavior: 'smooth' }); flash(document.getElementById('locGrid')); }
+  }));
+
+  mysteries.forEach(m => searchIndex.push({
+    type: 'Mystery', title: m, sub: 'Mystery Tracker',
+    action: () => { document.getElementById('mysteries').scrollIntoView({ behavior: 'smooth' }); flash(document.getElementById('mysteryGrid')); }
+  }));
+
+  timelineYears.forEach(y => searchIndex.push({
+    type: 'Timeline', title: y.year, sub: y.blurb,
+    action: () => { document.getElementById('timeline').scrollIntoView({ behavior: 'smooth' }); flash(timelineTrack); }
+  }));
+
+  worlds.forEach(w => searchIndex.push({
+    type: 'World', title: w.name, sub: w.desc,
+    action: () => { document.getElementById('worlds').scrollIntoView({ behavior: 'smooth' }); flash(document.getElementById('worldsGrid')); }
+  }));
+
+  orgs.forEach(o => searchIndex.push({
+    type: 'Organization', title: o.name, sub: o.desc,
+    action: () => { document.getElementById('worlds').scrollIntoView({ behavior: 'smooth' }); flash(document.getElementById('orgsGrid')); }
+  }));
+
+  symbols.forEach(s => searchIndex.push({
+    type: 'Symbol', title: s.name, sub: s.hint,
+    action: () => { document.getElementById('symbols').scrollIntoView({ behavior: 'smooth' }); flash(symbolGrid); }
+  }));
+
+  function flash(el) {
+    if (!el) return;
+    el.classList.add('search-flash');
+    setTimeout(() => el.classList.remove('search-flash'), 1600);
+  }
+
+  const searchTrigger = document.getElementById('searchTrigger');
+  const searchOverlay = document.getElementById('searchOverlay');
+  const searchBox = document.getElementById('searchBox');
+  const searchResultsEl = document.getElementById('searchResults');
+  const searchClose = document.getElementById('searchClose');
+
+  function openSearch() {
+    searchOverlay.classList.add('show');
+    searchBox.value = '';
+    renderSearchResults('');
+    setTimeout(() => searchBox.focus(), 50);
+  }
+  function closeSearch() { searchOverlay.classList.remove('show'); }
+
+  searchTrigger.addEventListener('click', openSearch);
+  searchClose.addEventListener('click', closeSearch);
+  searchOverlay.addEventListener('click', (e) => { if (e.target === searchOverlay) closeSearch(); });
+  document.addEventListener('keydown', (e) => {
+    if ((e.key === 'k' || e.key === 'K') && (e.metaKey || e.ctrlKey)) { e.preventDefault(); openSearch(); }
+    if (e.key === 'Escape') closeSearch();
+  });
+
+  function renderSearchResults(query) {
+    const q = query.trim().toLowerCase();
+    let matches = q
+      ? searchIndex.filter(item => item.title.toLowerCase().includes(q) || item.sub.toLowerCase().includes(q))
+      : searchIndex.slice(0, 8);
+
+    if (!matches.length) {
+      searchResultsEl.innerHTML = '<div class="search-empty">No results for that. Try a character, episode, or place.</div>';
+      return;
+    }
+
+    const grouped = {};
+    matches.slice(0, 40).forEach(m => {
+      if (!grouped[m.type]) grouped[m.type] = [];
+      grouped[m.type].push(m);
+    });
+
+    searchResultsEl.innerHTML = '';
+    Object.keys(grouped).forEach(type => {
+      const label = document.createElement('div');
+      label.className = 'search-group-label';
+      label.textContent = type + 's';
+      searchResultsEl.appendChild(label);
+      grouped[type].forEach(item => {
+        const row = document.createElement('div');
+        row.className = 'search-result';
+        row.innerHTML = `
+          <div>
+            <div class="search-result-title">${item.title}</div>
+            <div class="search-result-sub">${item.sub}</div>
+          </div>
+          <span class="search-result-tag">${item.type}</span>
+        `;
+        row.addEventListener('click', () => {
+          closeSearch();
+          item.action();
+        });
+        searchResultsEl.appendChild(row);
+      });
+    });
+  }
+
+  searchBox.addEventListener('input', () => renderSearchResults(searchBox.value));
+
+  // ==================================================================
+  // CHARACTER RELATIONSHIP GRAPH — publicly visible relationships only
+  // (immediate family + friendships/colleagues established early on).
+  // No hidden-identity or time-loop connections are represented here.
+  // ==================================================================
+  const familyColor = {
+    'Nielsen': '#4CC9F0',
+    'Kahnwald': '#C9A961',
+    'Doppler': '#8FA3B0',
+    'Tiedemann': '#7A8794',
+    'Sic Mundus': '#F1EEFB',
+    'Unaffiliated': '#F1EEFB'
+  };
+
+  const clusterCenters = {
+    'Nielsen': { x: 230, y: 160 },
+    'Kahnwald': { x: 680, y: 150 },
+    'Doppler': { x: 210, y: 420 },
+    'Tiedemann': { x: 680, y: 420 },
+    'Sic Mundus': { x: 450, y: 290 },
+    'Unaffiliated': { x: 450, y: 290 }
+  };
+
+  const relEdges = [
+    ['Ulrich Nielsen', 'Katharina Nielsen', 'spouse'],
+    ['Ulrich Nielsen', 'Martha Nielsen', 'parent'],
+    ['Ulrich Nielsen', 'Magnus Nielsen', 'parent'],
+    ['Ulrich Nielsen', 'Mikkel Nielsen', 'parent'],
+    ['Katharina Nielsen', 'Martha Nielsen', 'parent'],
+    ['Katharina Nielsen', 'Magnus Nielsen', 'parent'],
+    ['Katharina Nielsen', 'Mikkel Nielsen', 'parent'],
+    ['Charlotte Doppler', 'Peter Doppler', 'spouse'],
+    ['Charlotte Doppler', 'Franziska Doppler', 'parent'],
+    ['Peter Doppler', 'Franziska Doppler', 'parent'],
+    ['Regina Tiedemann', 'Bartosz Tiedemann', 'parent'],
+    ['Claudia Tiedemann', 'Regina Tiedemann', 'parent'],
+    ['Egon Tiedemann', 'Claudia Tiedemann', 'parent'],
+    ['Hannah Kahnwald', 'Jonas Kahnwald', 'parent'],
+    ['Jonas Kahnwald', 'Martha Nielsen', 'classmates'],
+    ['Jonas Kahnwald', 'Bartosz Tiedemann', 'classmates'],
+    ['Martha Nielsen', 'Bartosz Tiedemann', 'classmates'],
+    ['Magnus Nielsen', 'Franziska Doppler', 'classmates'],
+    ['Ulrich Nielsen', 'Charlotte Doppler', 'colleagues'],
+    ['Peter Doppler', 'Ulrich Nielsen', 'therapist'],
+    ['Noah', 'Regina Tiedemann', 'hotel guest'],
+    ['Noah', 'Bartosz Tiedemann', 'mentor'],
+    ['Noah', 'Adam', 'sic mundus'],
+    ['The Stranger', 'Regina Tiedemann', 'hotel guest'],
+  ];
+
+  function layoutGraph() {
+    const positions = {};
+    const byFamily = {};
+    characters.forEach(c => {
+      const fam = (c.family === 'Sic Mundus') ? 'Unaffiliated' : c.family;
+      if (!byFamily[fam]) byFamily[fam] = [];
+      byFamily[fam].push(c);
+    });
+    Object.keys(byFamily).forEach(fam => {
+      const members = byFamily[fam];
+      const center = clusterCenters[fam] || { x: 450, y: 290 };
+      const radius = fam === 'Unaffiliated' ? 150 : 85;
+      members.forEach((c, i) => {
+        const angle = (i / members.length) * Math.PI * 2 - Math.PI / 2;
+        positions[c.name] = {
+          x: center.x + Math.cos(angle) * radius,
+          y: center.y + Math.sin(angle) * radius,
+          family: c.family === 'Sic Mundus' ? 'Sic Mundus' : c.family
+        };
+      });
+    });
+    return positions;
+  }
+
+  function renderRelGraph() {
+    const svg = document.getElementById('relGraph');
+    const positions = layoutGraph();
+    svg.innerHTML = '';
+    const ns = 'http://www.w3.org/2000/svg';
+
+    const edgeGroup = document.createElementNS(ns, 'g');
+    relEdges.forEach(([a, b, label]) => {
+      const pa = positions[a], pb = positions[b];
+      if (!pa || !pb) return;
+      const line = document.createElementNS(ns, 'line');
+      line.setAttribute('x1', pa.x); line.setAttribute('y1', pa.y);
+      line.setAttribute('x2', pb.x); line.setAttribute('y2', pb.y);
+      line.setAttribute('class', 'graph-edge');
+      line.dataset.a = a; line.dataset.b = b;
+      edgeGroup.appendChild(line);
+    });
+    svg.appendChild(edgeGroup);
+
+    Object.keys(positions).forEach(name => {
+      const p = positions[name];
+      const g = document.createElementNS(ns, 'g');
+      g.setAttribute('class', 'graph-node');
+      g.dataset.name = name;
+
+      const circle = document.createElementNS(ns, 'circle');
+      circle.setAttribute('cx', p.x); circle.setAttribute('cy', p.y);
+      circle.setAttribute('r', 9);
+      circle.setAttribute('fill', familyColor[p.family] || '#F1EEFB');
+      circle.setAttribute('fill-opacity', '0.85');
+      circle.setAttribute('stroke', 'rgba(0,0,0,0.4)');
+      g.appendChild(circle);
+
+      const text = document.createElementNS(ns, 'text');
+      text.setAttribute('x', p.x);
+      text.setAttribute('y', p.y - 14);
+      text.setAttribute('text-anchor', 'middle');
+      text.textContent = name.split(' ')[0];
+      g.appendChild(text);
+
+      g.addEventListener('mouseenter', () => highlightNode(name));
+      g.addEventListener('mouseleave', () => clearHighlight());
+      g.addEventListener('click', () => {
+        const match = characters.find(c => c.name === name);
+        if (match) document.querySelectorAll('.char-card').forEach(card => {
+          if (card.querySelector('.char-name').textContent === name) card.click();
+        });
+      });
+
+      svg.appendChild(g);
+    });
+  }
+
+  function highlightNode(name) {
+    const connected = new Set([name]);
+    document.querySelectorAll('.graph-edge').forEach(edge => {
+      if (edge.dataset.a === name || edge.dataset.b === name) {
+        connected.add(edge.dataset.a); connected.add(edge.dataset.b);
+        edge.classList.remove('graph-dim');
+        edge.style.stroke = 'rgba(76,201,240,0.85)';
+      } else {
+        edge.classList.add('graph-dim');
+      }
+    });
+    document.querySelectorAll('.graph-node').forEach(node => {
+      if (connected.has(node.dataset.name)) node.classList.remove('graph-dim');
+      else node.classList.add('graph-dim');
+    });
+  }
+  function clearHighlight() {
+    document.querySelectorAll('.graph-edge').forEach(edge => { edge.classList.remove('graph-dim'); edge.style.stroke = ''; });
+    document.querySelectorAll('.graph-node').forEach(node => node.classList.remove('graph-dim'));
+  }
+
+  renderRelGraph();
+</script>
+
+</body>
+</html>

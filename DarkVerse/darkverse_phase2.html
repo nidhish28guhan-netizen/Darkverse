@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DarkVerse — Begin Your Journey</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,300;0,400;0,500;1,400&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void: #05050A;
+    --cosmic: #0D0B1F;
+    --indigo: #1B1039;
+    --cyan: #4CC9F0;
+    --violet: #9D4EDD;
+    --gold: #C9A961;
+    --starlight: #F1EEFB;
+    --starlight-dim: rgba(241,238,251,0.55);
+    --glass-border: rgba(157,78,221,0.25);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    background: var(--void);
+    color: var(--starlight);
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+    height: 100%;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  /* ---------- Background layers ---------- */
+  #bg-canvas {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+  }
+
+  .nebula-layer {
+    position: fixed;
+    inset: -10%;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 3s ease;
+  }
+
+  .nebula-layer.show { opacity: 1; }
+
+  .nebula-blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(90px);
+    mix-blend-mode: screen;
+    animation: drift 40s ease-in-out infinite;
+  }
+
+  .nebula-blob.n1 {
+    width: 45vw; height: 45vw;
+    top: 8%; left: 5%;
+    background: radial-gradient(circle, rgba(157,78,221,0.22), transparent 70%);
+    animation-duration: 46s;
+  }
+  .nebula-blob.n2 {
+    width: 55vw; height: 55vw;
+    bottom: -10%; right: 0%;
+    background: radial-gradient(circle, rgba(76,201,240,0.14), transparent 70%);
+    animation-duration: 55s;
+    animation-delay: -12s;
+  }
+  .nebula-blob.n3 {
+    width: 35vw; height: 35vw;
+    top: 40%; left: 55%;
+    background: radial-gradient(circle, rgba(27,16,57,0.5), transparent 70%);
+    animation-duration: 38s;
+    animation-delay: -20s;
+  }
+
+  @keyframes drift {
+    0%, 100% { transform: translate(0,0) scale(1); }
+    33% { transform: translate(3vw, -2vw) scale(1.06); }
+    66% { transform: translate(-2vw, 3vw) scale(0.96); }
+  }
+
+  .vignette {
+    position: fixed;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    background: radial-gradient(ellipse at center, transparent 40%, rgba(5,5,10,0.75) 100%);
+  }
+
+  .grain {
+    position: fixed;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* ---------- Floating nav console ---------- */
+  nav {
+    position: fixed;
+    top: 28px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-140%);
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 14px;
+    background: linear-gradient(180deg, rgba(27,16,57,0.55), rgba(13,11,31,0.55));
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid var(--glass-border);
+    border-radius: 999px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04);
+    transition: transform 1.4s cubic-bezier(.16,1,.3,1);
+    animation: navfloat 7s ease-in-out infinite;
+  }
+
+  nav.show { transform: translateX(-50%) translateY(0); }
+
+  @keyframes navfloat {
+    0%, 100% { margin-top: 0px; }
+    50% { margin-top: 6px; }
+  }
+
+  .nav-mark {
+    width: 30px;
+    height: 30px;
+    margin-right: 6px;
+    flex-shrink: 0;
+  }
+
+  .nav-link {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    color: var(--starlight-dim);
+    text-decoration: none;
+    padding: 9px 16px;
+    border-radius: 999px;
+    transition: color 0.4s ease, background 0.4s ease;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+
+  .nav-link:hover, .nav-link.active {
+    color: var(--starlight);
+    background: rgba(157,78,221,0.18);
+  }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    position: relative;
+    z-index: 10;
+    height: 100svh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 0 24px;
+  }
+
+  .blackhole-wrap {
+    position: relative;
+    width: min(520px, 78vw);
+    height: min(360px, 54vw);
+    opacity: 0;
+    transform: scale(0.85);
+    transition: opacity 3s ease, transform 3s cubic-bezier(.16,1,.3,1);
+  }
+
+  .blackhole-wrap.show {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  #bh-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .hero-copy {
+    position: relative;
+    margin-top: 8px;
+  }
+
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--cyan);
+    opacity: 0;
+    transition: opacity 1.6s ease, transform 1.6s ease;
+    transform: translateY(10px);
+  }
+  .eyebrow.show { opacity: 0.85; transform: translateY(0); }
+
+  .title {
+    font-family: 'Cormorant', serif;
+    font-weight: 300;
+    font-size: clamp(48px, 10vw, 108px);
+    letter-spacing: 0.06em;
+    line-height: 1;
+    margin-top: 14px;
+    background: linear-gradient(180deg, #FFFFFF 0%, var(--starlight-dim) 60%, rgba(157,78,221,0.7) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    opacity: 0;
+    filter: blur(6px);
+    transition: opacity 2s ease, filter 2s ease;
+  }
+  .title.show { opacity: 1; filter: blur(0); }
+
+  .subtitle {
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    font-size: clamp(14px, 1.6vw, 18px);
+    color: var(--starlight-dim);
+    margin-top: 18px;
+    letter-spacing: 0.02em;
+    opacity: 0;
+    transition: opacity 1.8s ease 0.3s;
+  }
+  .subtitle.show { opacity: 1; }
+
+  .cta {
+    margin-top: 44px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--void);
+    background: linear-gradient(135deg, var(--starlight), #cfc9e8);
+    border: none;
+    padding: 16px 38px;
+    border-radius: 999px;
+    cursor: pointer;
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity 1.6s ease 0.6s, transform 1.6s ease 0.6s, box-shadow 0.4s ease, transform 0.4s ease;
+    box-shadow: 0 0 0 rgba(76,201,240,0);
+  }
+  .cta.show { opacity: 1; transform: translateY(0); }
+  .cta:hover {
+    box-shadow: 0 0 40px rgba(76,201,240,0.5);
+    transform: translateY(-2px);
+  }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 36px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--starlight-dim);
+    opacity: 0;
+    transition: opacity 2s ease 1.4s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  .scroll-hint.show { opacity: 0.6; }
+  .scroll-line {
+    width: 1px;
+    height: 34px;
+    background: linear-gradient(180deg, var(--cyan), transparent);
+    animation: pulse-line 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse-line {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+  }
+
+  /* ---------- Season / Episode selector ---------- */
+  .selector {
+    position: relative;
+    z-index: 10;
+    min-height: 100vh;
+    padding: 100px 24px 140px;
+  }
+
+  .selector-head {
+    text-align: center;
+    max-width: 640px;
+    margin: 0 auto 64px;
+  }
+
+  .eyebrow2 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    opacity: 0.8;
+  }
+
+  .selector-title {
+    font-family: 'Cormorant', serif;
+    font-weight: 300;
+    font-size: clamp(34px, 5vw, 56px);
+    margin-top: 14px;
+    letter-spacing: 0.02em;
+    color: var(--starlight);
+  }
+
+  .selector-sub {
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    font-size: 15px;
+    color: var(--starlight-dim);
+    margin-top: 16px;
+    line-height: 1.6;
+  }
+
+  .seasons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 24px;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .season-card {
+    position: relative;
+    background: linear-gradient(160deg, rgba(27,16,57,0.5), rgba(13,11,31,0.35));
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 32px 26px;
+    cursor: pointer;
+    overflow: hidden;
+    transition: transform 0.5s cubic-bezier(.16,1,.3,1), border-color 0.5s ease, box-shadow 0.5s ease;
+  }
+
+  .season-card::before {
+    content: '';
+    position: absolute;
+    top: -40%;
+    right: -30%;
+    width: 60%;
+    height: 60%;
+    background: radial-gradient(circle, rgba(76,201,240,0.18), transparent 70%);
+    filter: blur(30px);
+    transition: opacity 0.5s ease;
+  }
+
+  .season-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(76,201,240,0.5);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  }
+
+  .season-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--cyan);
+  }
+
+  .season-name {
+    font-family: 'Cormorant', serif;
+    font-weight: 400;
+    font-size: 30px;
+    margin-top: 10px;
+    color: var(--starlight);
+  }
+
+  .season-meta {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    color: var(--starlight-dim);
+    margin-top: 10px;
+    line-height: 1.5;
+  }
+
+  .season-count {
+    display: inline-block;
+    margin-top: 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--gold);
+    border: 1px solid rgba(201,169,97,0.35);
+    border-radius: 999px;
+    padding: 5px 12px;
+  }
+
+  /* Orbit view */
+  .orbit-view {
+    display: none;
+    max-width: 1000px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  .orbit-view.show { display: block; }
+
+  .back-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    color: var(--starlight-dim);
+    background: transparent;
+    border: 1px solid var(--glass-border);
+    border-radius: 999px;
+    padding: 10px 20px;
+    cursor: pointer;
+    margin-bottom: 40px;
+    transition: color 0.3s ease, border-color 0.3s ease;
+  }
+  .back-btn:hover { color: var(--starlight); border-color: var(--cyan); }
+
+  .orbit-stage {
+    position: relative;
+    width: 100%;
+    max-width: 640px;
+    aspect-ratio: 1 / 1;
+    margin: 0 auto;
+  }
+
+  .orbit-bh {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 42%;
+  }
+  #bh-canvas-mini { width: 100%; height: auto; display: block; }
+
+  .orbit-ring {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  .orbit-nodes {
+    position: absolute;
+    inset: 0;
+  }
+
+  .ep-node {
+    position: absolute;
+    width: 46px;
+    height: 46px;
+    margin: -23px 0 0 -23px;
+    border-radius: 50%;
+    background: rgba(13,11,31,0.7);
+    border: 1.5px solid rgba(157,78,221,0.35);
+    color: var(--starlight-dim);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.35s cubic-bezier(.16,1,.3,1), border-color 0.35s ease, box-shadow 0.35s ease, background 0.35s ease, color 0.35s ease;
+  }
+  .ep-node:hover {
+    transform: scale(1.15);
+    border-color: var(--cyan);
+    color: var(--starlight);
+    box-shadow: 0 0 24px rgba(76,201,240,0.45);
+  }
+  .ep-node.active {
+    background: linear-gradient(140deg, var(--violet), var(--cyan));
+    border-color: transparent;
+    color: var(--void);
+    box-shadow: 0 0 30px rgba(157,78,221,0.6);
+  }
+  .ep-node.watched {
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  .episode-detail {
+    margin-top: 30px;
+    min-height: 140px;
+    background: linear-gradient(160deg, rgba(27,16,57,0.45), rgba(13,11,31,0.3));
+    border: 1px solid var(--glass-border);
+    border-radius: 18px;
+    padding: 30px 34px;
+    text-align: left;
+  }
+
+  .detail-hint {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    color: var(--starlight-dim);
+    text-align: center;
+    opacity: 0.6;
+  }
+
+  .detail-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--cyan);
+  }
+
+  .detail-title {
+    font-family: 'Cormorant', serif;
+    font-weight: 400;
+    font-size: 28px;
+    color: var(--starlight);
+    margin-top: 8px;
+  }
+
+  .detail-title-en {
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    font-size: 13px;
+    color: var(--starlight-dim);
+    margin-top: 2px;
+    font-style: italic;
+  }
+
+  .detail-teaser {
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--starlight);
+    margin-top: 16px;
+  }
+
+  .mark-watched {
+    margin-top: 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--gold);
+    background: transparent;
+    border: 1px solid rgba(201,169,97,0.4);
+    border-radius: 999px;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  .mark-watched:hover { background: rgba(201,169,97,0.12); }
+</style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+<div class="nebula-layer" id="nebula">
+  <div class="nebula-blob n1"></div>
+  <div class="nebula-blob n2"></div>
+  <div class="nebula-blob n3"></div>
+</div>
+<div class="vignette"></div>
+<div class="grain"></div>
+
+<nav id="nav">
+  <svg class="nav-mark" viewBox="0 0 100 100" fill="none">
+    <path d="M50 15 C 65 15, 75 30, 65 45 C 75 55, 75 72, 60 78 C 65 65, 58 52, 45 52 C 55 45, 55 25, 50 15 Z" fill="none" stroke="url(#g1)" stroke-width="3"/>
+    <path d="M50 15 C 35 15, 25 30, 35 45 C 25 55, 25 72, 40 78 C 35 65, 42 52, 55 52 C 45 45, 45 25, 50 15 Z" fill="none" stroke="url(#g2)" stroke-width="3"/>
+    <circle cx="50" cy="50" r="4" fill="#C9A961"/>
+    <defs>
+      <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#9D4EDD"/>
+        <stop offset="100%" stop-color="#4CC9F0"/>
+      </linearGradient>
+      <linearGradient id="g2" x1="1" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#4CC9F0"/>
+        <stop offset="100%" stop-color="#9D4EDD"/>
+      </linearGradient>
+    </defs>
+  </svg>
+  <a class="nav-link active">Journey</a>
+  <a class="nav-link">Timeline</a>
+  <a class="nav-link">Episodes</a>
+  <a class="nav-link">Family Tree</a>
+  <a class="nav-link">Mysteries</a>
+</nav>
+
+<section class="hero">
+  <div class="blackhole-wrap" id="blackhole">
+    <canvas id="bh-canvas" width="1040" height="720"></canvas>
+  </div>
+
+  <div class="hero-copy">
+    <div class="eyebrow" id="eyebrow">Everything is connected</div>
+    <h1 class="title" id="title">DarkVerse</h1>
+    <p class="subtitle" id="subtitle">An unofficial, spoiler-safe companion for navigating Dark — season by season, episode by episode.</p>
+    <button class="cta" id="cta">Begin Your Journey</button>
+  </div>
+
+  <div class="scroll-hint" id="scrollhint">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<section class="selector" id="selector">
+  <div class="selector-head">
+    <div class="eyebrow2">No spoilers. Ever.</div>
+    <h2 class="selector-title">Choose a Timeline</h2>
+    <p class="selector-sub">Pick a season, then an episode. You'll only ever see what happens up to the point you've chosen — nothing past it.</p>
+  </div>
+
+  <div class="seasons" id="seasons"></div>
+
+  <div class="orbit-view" id="orbitView">
+    <button class="back-btn" id="backBtn">&larr; All Seasons</button>
+    <div class="orbit-stage">
+      <div class="orbit-bh">
+        <canvas id="bh-canvas-mini" width="400" height="280"></canvas>
+      </div>
+      <svg class="orbit-ring" id="orbitRing" viewBox="0 0 700 700"></svg>
+      <div class="orbit-nodes" id="orbitNodes"></div>
+    </div>
+    <div class="episode-detail" id="episodeDetail">
+      <p class="detail-hint">Select an episode above to reveal its spoiler-safe teaser.</p>
+    </div>
+  </div>
+</section>
+
+<script>
+  // ---------- Starfield canvas ----------
+  const canvas = document.getElementById('bg-canvas');
+  const ctx = canvas.getContext('2d');
+  let w, h, stars = [], shootingStars = [];
+  const STAR_COUNT = 260;
+
+  function resize() {
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  function initStars() {
+    stars = [];
+    for (let i = 0; i < STAR_COUNT; i++) {
+      stars.push({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        r: Math.random() * 1.3 + 0.2,
+        baseAlpha: Math.random() * 0.6 + 0.2,
+        twinkleSpeed: Math.random() * 0.015 + 0.003,
+        phase: Math.random() * Math.PI * 2,
+        layer: Math.random() < 0.7 ? 1 : (Math.random() < 0.9 ? 2 : 3),
+        appear: Math.random() * 3.5 // seconds delay before appearing
+      });
+    }
+  }
+  initStars();
+
+  let startTime = performance.now();
+  let mouseX = 0, mouseY = 0;
+  window.addEventListener('mousemove', (e) => {
+    mouseX = (e.clientX / w - 0.5);
+    mouseY = (e.clientY / h - 0.5);
+  });
+
+  function maybeSpawnShootingStar() {
+    if (Math.random() < 0.0025 && shootingStars.length < 2) {
+      const startX = Math.random() * w * 0.6 + w * 0.2;
+      shootingStars.push({
+        x: startX, y: -20,
+        vx: -2.4, vy: 3.2,
+        life: 1, maxLife: 60 + Math.random() * 20
+      });
+    }
+  }
+
+  function draw(now) {
+    const elapsed = (now - startTime) / 1000;
+    ctx.clearRect(0, 0, w, h);
+
+    // subtle radial glow center (light bending toward hero)
+    const grad = ctx.createRadialGradient(w/2, h*0.42, 0, w/2, h*0.42, w*0.5);
+    grad.addColorStop(0, 'rgba(157,78,221,0.05)');
+    grad.addColorStop(1, 'rgba(5,5,10,0)');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, w, h);
+
+    for (const s of stars) {
+      if (elapsed < s.appear) continue;
+      const introFade = Math.min(1, (elapsed - s.appear) / 1.2);
+      const twinkle = Math.sin(elapsed * (s.twinkleSpeed * 60) + s.phase) * 0.35 + 0.65;
+      const parallax = s.layer * 6;
+      const px = s.x + mouseX * parallax;
+      const py = s.y + mouseY * parallax;
+      const alpha = s.baseAlpha * twinkle * introFade;
+
+      ctx.beginPath();
+      ctx.arc(px, py, s.r * (s.layer === 3 ? 1.4 : 1), 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(241,238,251,${alpha})`;
+      ctx.fill();
+
+      if (s.layer === 3 && twinkle > 0.9) {
+        ctx.beginPath();
+        ctx.arc(px, py, s.r * 3, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(76,201,240,${alpha * 0.15})`;
+        ctx.fill();
+      }
+    }
+
+    maybeSpawnShootingStar();
+    shootingStars.forEach((sh, i) => {
+      sh.x += sh.vx; sh.y += sh.vy; sh.life++;
+      const fade = 1 - sh.life / sh.maxLife;
+      if (fade <= 0) { shootingStars.splice(i, 1); return; }
+      ctx.beginPath();
+      ctx.moveTo(sh.x, sh.y);
+      ctx.lineTo(sh.x - sh.vx * 8, sh.y - sh.vy * 8);
+      ctx.strokeStyle = `rgba(241,238,251,${fade * 0.8})`;
+      ctx.lineWidth = 1.4;
+      ctx.stroke();
+    });
+
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+
+  // ---------- Hero reveal sequence ----------
+  const seq = [
+    { el: () => document.getElementById('nebula'), cls: 'show', delay: 1200 },
+    { el: () => document.getElementById('blackhole'), cls: 'show', delay: 2600 },
+    { el: () => document.getElementById('eyebrow'), cls: 'show', delay: 3600 },
+    { el: () => document.getElementById('title'), cls: 'show', delay: 4200 },
+    { el: () => document.getElementById('subtitle'), cls: 'show', delay: 4900 },
+    { el: () => document.getElementById('cta'), cls: 'show', delay: 5500 },
+    { el: () => document.getElementById('nav'), cls: 'show', delay: 5900 },
+    { el: () => document.getElementById('scrollhint'), cls: 'show', delay: 6300 },
+  ];
+  seq.forEach(step => {
+    setTimeout(() => step.el().classList.add(step.cls), step.delay);
+  });
+
+  document.getElementById('cta').addEventListener('click', () => {
+    document.getElementById('selector').scrollIntoView({ behavior: 'smooth' });
+  });
+
+  // ==================================================================
+  // REALISTIC BLACK HOLE RENDERER (canvas, physically-inspired look:
+  // tilted accretion disk, Doppler-beamed brightness, lensed arcs
+  // above/below the shadow, photon ring). Reused for hero + mini view.
+  // ==================================================================
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function makeDiskParticles(count) {
+    const particles = [];
+    for (let i = 0; i < count; i++) {
+      particles.push({
+        angle: Math.random() * Math.PI * 2,
+        rr: 1.28 + Math.pow(Math.random(), 1.6) * 2.1, // radius ratio from horizon
+        jitter: (Math.random() - 0.5) * 0.06,
+        size: Math.random() * 1.4 + 0.4,
+        speed: 0.15 + Math.random() * 0.1
+      });
+    }
+    return particles;
+  }
+
+  function diskColor(rr, alpha) {
+    // inner = hot blue-white, mid = gold, outer = deep ember red
+    const t = Math.min(1, (rr - 1.28) / 2.1);
+    let r, g, b;
+    if (t < 0.5) {
+      const k = t / 0.5;
+      r = 255 - k * (255 - 255); g = 250 - k * (250 - 205); b = 245 - k * (245 - 110);
+    } else {
+      const k = (t - 0.5) / 0.5;
+      r = 255; g = 205 - k * (205 - 70); b = 110 - k * (110 - 40);
+    }
+    return `rgba(${r|0},${g|0},${b|0},${alpha})`;
+  }
+
+  function drawBlackHole(ctx, cw, ch, t, particles) {
+    ctx.clearRect(0, 0, cw, ch);
+    const cx = cw / 2, cy = ch / 2;
+    const R = Math.min(cw, ch) * 0.155; // event horizon radius
+    const squash = 0.30; // perspective flatten of the disk ellipse
+
+    // faint outer glow
+    const glow = ctx.createRadialGradient(cx, cy, R * 0.5, cx, cy, R * 4.2);
+    glow.addColorStop(0, 'rgba(157,78,221,0.10)');
+    glow.addColorStop(1, 'rgba(5,5,10,0)');
+    ctx.fillStyle = glow;
+    ctx.fillRect(0, 0, cw, ch);
+
+    const rot = reduceMotion ? 0 : t * 0.06;
+
+    // Disk particles (both sides; ones geometrically inside the horizon radius get skipped later by drawing horizon on top)
+    for (const p of particles) {
+      const a = p.angle + rot * p.speed * 4;
+      const rx = R * p.rr;
+      const ry = R * p.rr * squash;
+      const x = cx + Math.cos(a) * rx;
+      const y = cy + Math.sin(a) * ry * (1 + p.jitter);
+
+      // Doppler beaming: side moving toward viewer (left, cos(a) < 0) is brighter
+      const beam = 0.55 + 0.55 * (-Math.cos(a));
+      const alpha = Math.max(0.08, Math.min(1, beam * (1 - (p.rr - 1.28) / 3.6)));
+
+      ctx.beginPath();
+      ctx.arc(x, y, p.size * (0.6 + beam * 0.6), 0, Math.PI * 2);
+      ctx.fillStyle = diskColor(p.rr, alpha);
+      ctx.fill();
+    }
+
+    // Lensed arcs: light from the far side of the disk bent OVER the top and
+    // UNDER the bottom of the shadow (the signature Interstellar-style look)
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    [ -1, 1 ].forEach(dir => {
+      const grad = ctx.createLinearGradient(cx - R * 2, cy, cx + R * 2, cy);
+      grad.addColorStop(0, 'rgba(255,225,180,0)');
+      grad.addColorStop(0.5, 'rgba(255,225,180,0.55)');
+      grad.addColorStop(1, 'rgba(255,225,180,0)');
+      ctx.strokeStyle = grad;
+      ctx.lineWidth = R * 0.09;
+      ctx.beginPath();
+      ctx.ellipse(cx, cy, R * 2.05, R * 0.42, 0, Math.PI * 0.98 * dir, Math.PI * 0.02 * dir, dir < 0);
+      ctx.stroke();
+    });
+    ctx.restore();
+
+    // Event horizon shadow
+    ctx.beginPath();
+    ctx.arc(cx, cy, R, 0, Math.PI * 2);
+    ctx.fillStyle = '#000';
+    ctx.shadowColor = 'rgba(157,78,221,0.5)';
+    ctx.shadowBlur = R * 0.5;
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    // Photon ring (thin bright rim right at the shadow edge)
+    ctx.beginPath();
+    ctx.arc(cx, cy, R * 1.015, 0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(255,245,230,0.75)';
+    ctx.lineWidth = Math.max(1, R * 0.018);
+    ctx.stroke();
+  }
+
+  function initBlackHoleCanvas(canvasId, particleCount) {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const particles = makeDiskParticles(particleCount);
+    const cw = canvas.width, ch = canvas.height;
+    let start = performance.now();
+
+    function loop(now) {
+      const t = (now - start) / 1000;
+      drawBlackHole(ctx, cw, ch, t, particles);
+      if (!reduceMotion) requestAnimationFrame(loop);
+    }
+    requestAnimationFrame(loop);
+  }
+
+  initBlackHoleCanvas('bh-canvas', 1400);
+
+  // ==================================================================
+  // EPISODE DATA — original spoiler-safe teasers written from general
+  // knowledge of the series. No plot outcomes revealed; each teaser
+  // only frames the question/mood of that episode.
+  // ==================================================================
+  const seasons = [
+    {
+      id: 1,
+      name: 'Season One',
+      subtitle: 'The First Cycle',
+      meta: 'A boy vanishes from a small town, and the ground underneath everyone\'s certainty starts to give way.',
+      episodes: [
+        { n: 1, de: 'Geheimnisse', en: 'Secrets', teaser: 'A quiet town\'s routine cracks the moment someone goes missing — and old wounds refuse to stay buried.' },
+        { n: 2, de: 'Lügen', en: 'Lies', teaser: 'Everyone in Winden is protecting something. The search for answers peels back the first layer.' },
+        { n: 3, de: 'Gestern und Heute', en: 'Yesterday and Today', teaser: 'A different year, the same fear. This town has been here before, whether it remembers or not.' },
+        { n: 4, de: 'Doppelleben', en: 'Double Lives', teaser: 'Behind closed doors, nobody is quite who they seem at breakfast.' },
+        { n: 5, de: 'Wahrheiten', en: 'Truths', teaser: 'Some questions finally get answered. The answers only raise more of them.' },
+        { n: 6, de: 'Sic Mundus Creatus Est', en: 'Thus the World Was Made', teaser: 'A phrase, a symbol, a group with a purpose nobody outside it understands yet.' },
+        { n: 7, de: 'Kreuzwege', en: 'Crossroads', teaser: 'Choices start to matter in ways none of the characters can see yet.' },
+        { n: 8, de: 'Was man sät...', en: 'As You Sow, So Shall You Reap', teaser: 'Consequences catch up with people — some from further back than expected.' },
+        { n: 9, de: 'Alles ist jetzt', en: 'Everything Is Now', teaser: 'The wall between "then" and "now" gets thinner than anyone is comfortable with.' },
+        { n: 10, de: 'Alpha und Omega', en: 'Alpha and Omega', teaser: 'The first cycle closes on a question that redefines everything that came before it.' },
+      ]
+    },
+    {
+      id: 2,
+      name: 'Season Two',
+      subtitle: 'Dark Matter',
+      meta: 'Understanding of the cycle deepens, a countdown begins, and new factions want very different endings.',
+      episodes: [
+        { n: 1, de: 'Anfänge und Enden', en: 'Beginnings and Endings', teaser: 'A new chapter opens somewhere the story hasn\'t shown you yet.' },
+        { n: 2, de: 'Dunkle Materie', en: 'Dark Matter', teaser: 'The rules of what\'s possible get rewritten again.' },
+        { n: 3, de: 'Gespenster', en: 'Ghosts', teaser: 'The past isn\'t finished with anyone — least of all the people who thought they\'d escaped it.' },
+        { n: 4, de: 'Die Reisenden', en: 'The Travelers', teaser: 'More people know how to move through time than anyone realized — and they don\'t all want the same thing.' },
+        { n: 5, de: 'Vom Suchen und Finden', en: 'Seeking and Finding', teaser: 'A search finally connects dots someone has been avoiding for a long time.' },
+        { n: 6, de: 'Ein unendlicher Kreis', en: 'An Infinite Circle', teaser: 'The true shape of the cycle becomes impossible to ignore.' },
+        { n: 7, de: 'Der weiße Teufel', en: 'The White Devil', teaser: 'Someone crosses a line that can\'t be uncrossed, in more than one timeframe.' },
+        { n: 8, de: 'Enden und Anfänge', en: 'Endings and Beginnings', teaser: 'The clock everyone\'s been racing against finally runs out — and something else begins.' },
+      ]
+    },
+    {
+      id: 3,
+      name: 'Season Three',
+      subtitle: 'Adam & Eve',
+      meta: 'Parallel worlds surface, two philosophies of fate collide, and the story reaches for its origin.',
+      episodes: [
+        { n: 1, de: 'Déjà-vu', en: 'Déjà-vu', teaser: 'A familiar town turns out to be somewhere else entirely.' },
+        { n: 2, de: 'Die Überlebende', en: 'The Survivor', teaser: 'Someone who shouldn\'t still be standing is exactly that.' },
+        { n: 3, de: 'Adam und Eva', en: 'Adam and Eve', teaser: 'Two sides of the same fight finally get names.' },
+        { n: 4, de: 'Der Ursprung', en: 'The Origin', teaser: 'The story reaches back toward whatever started all of this in the first place.' },
+        { n: 5, de: 'Leben und Tod', en: 'Life and Death', teaser: 'The stakes stop being abstract for the people at the center of it.' },
+        { n: 6, de: 'Licht und Schatten', en: 'Light and Shadow', teaser: 'Two ideas about how the world works go head to head.' },
+        { n: 7, de: 'Zwischen der Zeit', en: 'Between the Time', teaser: 'The gap between what\'s fixed and what\'s still possible narrows to almost nothing.' },
+        { n: 8, de: 'Das Paradies', en: 'Paradise', teaser: 'Everything the story has been building toward finally resolves.' },
+      ]
+    }
+  ];
+
+  const watched = new Set(); // in-memory only, "key" = "s-e"
+
+  const seasonsEl = document.getElementById('seasons');
+  const orbitView = document.getElementById('orbitView');
+  const orbitNodesEl = document.getElementById('orbitNodes');
+  const orbitRingEl = document.getElementById('orbitRing');
+  const episodeDetailEl = document.getElementById('episodeDetail');
+  const backBtn = document.getElementById('backBtn');
+
+  seasons.forEach(season => {
+    const card = document.createElement('div');
+    card.className = 'season-card';
+    card.innerHTML = `
+      <div class="season-eyebrow">Season 0${season.id}</div>
+      <div class="season-name">${season.subtitle}</div>
+      <div class="season-meta">${season.meta}</div>
+      <div class="season-count">${season.episodes.length} Episodes</div>
+    `;
+    card.addEventListener('click', () => openSeason(season));
+    seasonsEl.appendChild(card);
+  });
+
+  let miniInitialized = false;
+
+  function openSeason(season) {
+    seasonsEl.style.display = 'none';
+    document.querySelector('.selector-head').style.display = 'none';
+    orbitView.classList.add('show');
+    orbitNodesEl.innerHTML = '';
+    orbitRingEl.innerHTML = '';
+    episodeDetailEl.innerHTML = '<p class="detail-hint">Select an episode above to reveal its spoiler-safe teaser.</p>';
+
+    if (!miniInitialized) {
+      initBlackHoleCanvas('bh-canvas-mini', 700);
+      miniInitialized = true;
+    }
+
+    const n = season.episodes.length;
+    const cx = 350, cy = 350, radius = 300;
+
+    // orbit ring path
+    const ring = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    ring.setAttribute('cx', cx); ring.setAttribute('cy', cy); ring.setAttribute('r', radius);
+    ring.setAttribute('fill', 'none');
+    ring.setAttribute('stroke', 'rgba(157,78,221,0.18)');
+    ring.setAttribute('stroke-width', '1');
+    ring.setAttribute('stroke-dasharray', '2 6');
+    orbitRingEl.appendChild(ring);
+
+    season.episodes.forEach((ep, i) => {
+      const angle = (i / n) * Math.PI * 2 - Math.PI / 2;
+      const xPct = 50 + (Math.cos(angle) * radius / 700) * 100;
+      const yPct = 50 + (Math.sin(angle) * radius / 700) * 100;
+
+      const node = document.createElement('div');
+      node.className = 'ep-node';
+      const key = `${season.id}-${ep.n}`;
+      if (watched.has(key)) node.classList.add('watched');
+      node.style.left = xPct + '%';
+      node.style.top = yPct + '%';
+      node.textContent = ep.n;
+      node.title = ep.en;
+      node.addEventListener('click', () => {
+        document.querySelectorAll('.ep-node').forEach(el => el.classList.remove('active'));
+        node.classList.add('active');
+        renderEpisode(season, ep, key, node);
+      });
+      orbitNodesEl.appendChild(node);
+    });
+  }
+
+  function renderEpisode(season, ep, key, node) {
+    episodeDetailEl.innerHTML = `
+      <div class="detail-num">${season.subtitle} · Episode ${ep.n}</div>
+      <div class="detail-title">${ep.de}</div>
+      <div class="detail-title-en">${ep.en}</div>
+      <p class="detail-teaser">${ep.teaser}</p>
+      <button class="mark-watched" id="markWatchedBtn">${watched.has(key) ? '✓ Marked as Watched' : 'Mark as Watched'}</button>
+    `;
+    document.getElementById('markWatchedBtn').addEventListener('click', () => {
+      if (watched.has(key)) { watched.delete(key); node.classList.remove('watched'); }
+      else { watched.add(key); node.classList.add('watched'); }
+      renderEpisode(season, ep, key, node);
+    });
+  }
+
+  backBtn.addEventListener('click', () => {
+    orbitView.classList.remove('show');
+    seasonsEl.style.display = 'grid';
+    document.querySelector('.selector-head').style.display = 'block';
+  });
+</script>
+
+</body>
+</html>
