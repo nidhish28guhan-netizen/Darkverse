@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Full Spoiler Mode — DarkVerse</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,300;0,400;0,500;1,400&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void: #05050A;
+    --charcoal: #111218;
+    --steel: #3A3F4C;
+    --cyan: #4CC9F0;
+    --gold: #C9A961;
+    --crimson: #C1272D;
+    --starlight: #F1EEFB;
+    --starlight-dim: rgba(241,238,251,0.55);
+    --border: rgba(70,80,100,0.28);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    background: radial-gradient(ellipse at 50% -10%, #1a1214 0%, #05050A 55%);
+    color: var(--starlight);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+  }
+  a { color: var(--cyan); text-decoration: none; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 40px 24px 120px; }
+
+  /* Warning gate */
+  .warn-gate {
+    position: fixed; inset: 0; z-index: 100;
+    background: rgba(2,2,4,0.92);
+    backdrop-filter: blur(10px);
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px;
+    transition: opacity 0.6s ease;
+  }
+  .warn-gate.hide { opacity: 0; pointer-events: none; }
+  .warn-card { max-width: 520px; text-align: center; }
+  .warn-icon { font-size: 40px; }
+  .warn-title {
+    font-family: 'Cormorant', serif; font-weight: 400; font-size: 34px;
+    margin-top: 14px; color: var(--starlight);
+  }
+  .warn-sub {
+    font-family: 'Inter', sans-serif; font-weight: 300; font-size: 14px;
+    color: var(--starlight-dim); margin-top: 14px; line-height: 1.7;
+  }
+  .warn-btn {
+    margin-top: 28px; background: var(--crimson); color: var(--starlight);
+    border: none; border-radius: 999px; padding: 14px 30px;
+    font-family: 'Inter', sans-serif; font-weight: 600; font-size: 14px; cursor: pointer;
+  }
+  .warn-back {
+    display: block; margin-top: 16px;
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--starlight-dim);
+  }
+
+  .banner {
+    background: rgba(193,39,45,0.1);
+    border: 1px solid rgba(193,39,45,0.35);
+    border-radius: 14px;
+    padding: 16px 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    letter-spacing: 0.04em;
+    color: rgba(241,238,251,0.8);
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  .banner b { color: var(--crimson); }
+
+  .eyebrow { text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--crimson); }
+  h1.title { text-align: center; font-family: 'Cormorant', serif; font-weight: 300; font-size: clamp(34px, 6vw, 54px); margin-top: 12px; }
+  .subtitle { text-align: center; font-family: 'Inter', sans-serif; font-weight: 300; font-size: 14px; color: var(--starlight-dim); max-width: 560px; margin: 14px auto 50px; line-height: 1.6; }
+
+  h2.section-title {
+    font-family: 'Cormorant', serif; font-weight: 400; font-size: 28px;
+    margin: 60px 0 18px; color: var(--gold);
+    border-bottom: 1px solid var(--border); padding-bottom: 10px;
+  }
+  p, li { font-family: 'Inter', sans-serif; font-weight: 300; font-size: 14.5px; line-height: 1.75; color: rgba(241,238,251,0.85); }
+  p + p { margin-top: 12px; }
+
+  table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+  th, td { text-align: left; padding: 10px 12px; font-size: 13px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--starlight-dim); }
+  td.era { font-family: 'JetBrains Mono', monospace; color: var(--cyan); white-space: nowrap; }
+  td.ep { font-family: 'JetBrains Mono', monospace; color: var(--gold); white-space: nowrap; }
+  td.et { font-weight: 600; color: var(--starlight); white-space: nowrap; }
+
+  .season-block { margin-top: 28px; }
+  .season-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.15em;
+    text-transform: uppercase; color: var(--starlight-dim); margin-bottom: 8px;
+  }
+
+  ul.web-list { margin: 10px 0 0 18px; }
+  ul.web-list li { margin-bottom: 12px; }
+
+  .home-link { display: block; text-align: center; margin-top: 60px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--starlight-dim); }
+  .home-link:hover { color: var(--cyan); }
+</style>
+</head>
+<body>
+
+<div class="warn-gate" id="warnGate">
+  <div class="warn-card">
+    <div class="warn-icon">🔴</div>
+    <div class="warn-title">This page spoils everything</div>
+    <p class="warn-sub">Every major identity reveal, family connection, and the full ending of all three seasons is below. There is no partial version of this page — if you continue, you'll know how it ends.</p>
+    <button class="warn-btn" id="warnContinue">I understand — show me everything</button>
+    <a class="warn-back" href="../index.html">&larr; Take me back to the spoiler-safe site</a>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="banner">🔴 <b>FULL SPOILER MODE</b> — this page is intentionally separate from the rest of DarkVerse and is never linked to by anything spoiler-gated.</div>
+
+  <div class="eyebrow">The Complete Picture</div>
+  <h1 class="title">Full Spoiler Mode</h1>
+  <p class="subtitle">Everything below is written in original language as an explanatory reference, not reproduced from the show itself — but it covers the full three-season arc, including the finale.</p>
+
+  <h2 class="section-title">1. The Complete Timeline</h2>
+  <table>
+    <tr><th>Era</th><th>What it is</th></tr>
+    <tr><td class="era">1888</td><td>Sic Mundus becomes an active order in Winden. Several characters end up stranded here after the apocalypse, decades out of their own time.</td></tr>
+    <tr><td class="era">1921</td><td>A young Noah is drawn into Sic Mundus during an excavation at the caves.</td></tr>
+    <tr><td class="era">1953–54</td><td>The nuclear plant is under construction. Younger versions of the Tiedemann and Doppler lines are already entangled.</td></tr>
+    <tr><td class="era">1986–87</td><td>An incident at the newly built plant tears open the passage between eras. The adults of 2019 are teenagers here.</td></tr>
+    <tr><td class="era">2019–20</td><td>The "present" the series opens in — and the point everything else radiates outward from.</td></tr>
+    <tr><td class="era">2052–53</td><td>A ruined future, shaped by an apocalypse nobody in the present has explained yet.</td></tr>
+    <tr><td class="era">Adam's World</td><td>One of two mirror-image versions of the same sequence of events, defined by the belief the loop must be destroyed.</td></tr>
+    <tr><td class="era">Eva's World</td><td>The other mirror world, defined by the opposite belief — that the loop should be preserved.</td></tr>
+    <tr><td class="era">Origin World</td><td>The untouched world underneath both — where the entire loop actually began, and the only one left standing at the end.</td></tr>
+  </table>
+
+  <h2 class="section-title">2. The Unified Family Web</h2>
+  <p>The show's "four separate families" framing quietly falls apart once you follow every thread. The recursive connections are the whole point:</p>
+  <ul class="web-list">
+    <li><b>Michael Kahnwald is Mikkel Nielsen, grown up.</b> The boy who vanishes from 2019 is raised in 1986 onward under a new identity, eventually marries Hannah, and fathers Jonas — making Jonas biologically the nephew of Martha, Magnus, and the Nielsen siblings he grows up thinking are unrelated to him.</li>
+    <li><b>Jonas doesn't stay nineteen.</b> Later timelines reveal him aging into "The Stranger," and finally into "Adam" — the scarred leader of Sic Mundus, convinced the only way out of the loop is to end it completely.</li>
+    <li><b>Martha has the mirrored arc.</b> An older, alternate-world version of her becomes "Eva," leading a rival faction called Erit Lux, convinced the loop should be preserved rather than destroyed.</li>
+    <li><b>Noah is quietly part of the Nielsen bloodline.</b> His family connects back through Ulrich's side, making him far less of an outsider to Winden than he first appears.</li>
+    <li><b>Charlotte Doppler's parentage runs through Noah as well</b> — one of several places where the family trees stop being four separate lines and start being one loop.</li>
+    <li><b>Katharina's mother, Helene Albers,</b> becomes one of the darker threads of the back half of the show, with direct and violent consequences for Katharina herself.</li>
+    <li><b>"The Origin"</b> is a single child conceived by Jonas and Martha — the literal point where every branch of every family tree loops back into itself.</li>
+  </ul>
+
+  <h2 class="section-title">3. Season-by-Season Guide</h2>
+
+  <div class="season-block">
+    <div class="season-label">Season 1 — The First Cycle</div>
+    <table>
+      <tr><th>Ep</th><th>Title</th><th>Key reveal</th></tr>
+      <tr><td class="ep">01</td><td class="et">Secrets</td><td>Michael Kahnwald's suicide, Mikkel's disappearance in the caves, and a decades-old body turning up in the bunker all happen the same night.</td></tr>
+      <tr><td class="ep">02</td><td class="et">Lies</td><td>Ulrich finds a sealed door deep in the caves; Mikkel stumbles out of them thirty-three years in the past.</td></tr>
+      <tr><td class="ep">03</td><td class="et">Past and Present</td><td>The 1986 timeline fills in — young Claudia is about to take over the plant.</td></tr>
+      <tr><td class="ep">04</td><td class="et">Double Lives</td><td>Noah is introduced through Elisabeth; a second child goes missing.</td></tr>
+      <tr><td class="ep">05</td><td class="et">Truths</td><td>In 1986, a teenage Hannah's obsession with Ulrich leads her to falsely accuse him of assault.</td></tr>
+      <tr><td class="ep">06</td><td class="et">Sic Mundus Creatus Est</td><td>Jonas realizes his father Michael is Mikkel, thirty-three years older.</td></tr>
+      <tr><td class="ep">07</td><td class="et">Crossroads</td><td>Jonas makes his first trip into 1986.</td></tr>
+      <tr><td class="ep">08</td><td class="et">As You Sow...</td><td>H.G. Tannhaus, the town clockmaker, explains the triquetra — three interlocked points in time.</td></tr>
+      <tr><td class="ep">09</td><td class="et">Everything Is Now</td><td>Claudia's dog turns up having traveled through the passage herself.</td></tr>
+      <tr><td class="ep">10</td><td class="et">Alpha and Omega</td><td>A much older Claudia is revealed to have been quietly directing events all along.</td></tr>
+    </table>
+  </div>
+
+  <div class="season-block">
+    <div class="season-label">Season 2 — Dark Matter</div>
+    <table>
+      <tr><th>Ep</th><th>Title</th><th>Key reveal</th></tr>
+      <tr><td class="ep">01</td><td class="et">Beginnings and Endings</td><td>The story jumps to a devastated 2053 and to 1921, where a young Noah is drawn into Sic Mundus.</td></tr>
+      <tr><td class="ep">02</td><td class="et">Dark Matter</td><td>An older Claudia visits her younger self with a map to build a working time machine.</td></tr>
+      <tr><td class="ep">03</td><td class="et">Ghosts</td><td>Claudia builds and uses the machine, arriving in 2020 — where Noah kills her for the notebook she carries.</td></tr>
+      <tr><td class="ep">04</td><td class="et">The Travelers</td><td>Jonas meets Adam directly for the first time — an older, scarred version of himself.</td></tr>
+      <tr><td class="ep">05</td><td class="et">Lost and Found</td><td>Ulrich, trapped decades in the past, briefly reunites with a young Mikkel.</td></tr>
+      <tr><td class="ep">06</td><td class="et">An Endless Cycle</td><td>Jonas tries to stop his father's suicide and learns the timeline resists being changed.</td></tr>
+      <tr><td class="ep">07</td><td class="et">The White Devil</td><td>Martha finally learns who the Stranger really is.</td></tr>
+      <tr><td class="ep">08</td><td class="et">Endings and Beginnings</td><td>Adam kills Noah, then Martha, triggering the apocalypse — an alternate-world Martha pulls Jonas out just in time.</td></tr>
+    </table>
+  </div>
+
+  <div class="season-block">
+    <div class="season-label">Season 3 — Adam &amp; Eva</div>
+    <table>
+      <tr><th>Ep</th><th>Title</th><th>Key reveal</th></tr>
+      <tr><td class="ep">01</td><td class="et">Déjà-vu</td><td>Jonas surfaces in an alternate Winden where Mikkel never disappeared.</td></tr>
+      <tr><td class="ep">02</td><td class="et">The Survivors</td><td>An older Jonas is revealed stranded in 1888, decades after the apocalypse.</td></tr>
+      <tr><td class="ep">03</td><td class="et">Adam and Eva</td><td>Eva — an aged, alternate Martha — is introduced as Adam's opposite number.</td></tr>
+      <tr><td class="ep">04</td><td class="et">The Origin</td><td>Martha learns she's pregnant with "the Origin" — a child unlike anyone else in either world.</td></tr>
+      <tr><td class="ep">05</td><td class="et">Life and Death</td><td>Katharina is killed by her own mother; an alternate-world Martha kills Jonas.</td></tr>
+      <tr><td class="ep">06</td><td class="et">Light and Shadow</td><td>Young Jonas is revealed simultaneously alive and dead across the two worlds.</td></tr>
+      <tr><td class="ep">07</td><td class="et">Between the Time</td><td>Jonas and Claudia try to stabilize the particle powering the entire cycle.</td></tr>
+      <tr><td class="ep">08</td><td class="et">The Paradise</td><td>Claudia reveals the full truth — a third "Origin World," and one grieving man's failed invention. Jonas and Martha travel there, undo the accident that started everything, and both looping worlds — along with themselves — cease to have ever existed.</td></tr>
+    </table>
+  </div>
+
+  <h2 class="section-title">4. The Core Mystery &amp; Resolution</h2>
+  <p><b>The loop:</b> a wormhole in the caves connects points in time exactly 33 years apart, letting characters travel between 1953, 1986, and 2019 — and later 1921, 2052/2053, and two mirror worlds.</p>
+  <p><b>The knot:</b> the four families aren't really four families. Their bloodlines and relationships fold back on each other across generations until the "family tree" is closer to a closed loop than a tree.</p>
+  <p><b>The origin:</b> in a third, untouched world, a 1971 car crash kills H.G. Tannhaus's son, daughter-in-law, and granddaughter. His grief drives him to spend years building a time machine to undo it — a machine that, when switched on in 1986, doesn't send him back in time. It splits his world into the two looping, mirrored ones the entire series takes place in.</p>
+  <p><b>The resolution:</b> a teenage Jonas and Martha, pulled from the fork at the exact recursive moment it happens, travel back into the untouched Origin World and warn Tannhaus's son the bridge is out — preventing the crash entirely. No grief, no machine, no split. Adam's world and Eve's world — and everyone native to them, Jonas and Martha included — unravel, because they were never supposed to exist in the first place. Everyone else lives out a version of 2019 where none of this ever happened.</p>
+
+  <a class="home-link" href="../index.html">&larr; Back to the spoiler-safe DarkVerse</a>
+</div>
+
+<script>
+  document.getElementById('warnContinue').addEventListener('click', () => {
+    document.getElementById('warnGate').classList.add('hide');
+  });
+</script>
+
+</body>
+</html>
