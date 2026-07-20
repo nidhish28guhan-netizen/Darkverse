@@ -73,6 +73,9 @@ DarkVerse is an independent fan-made project created for educational purposes.
 
 **DARK**, its characters, artwork, logos, and all related intellectual property belong to **Netflix**, **Wiedemann & Berg Television**, and the original creators. This project is not affiliated with or endorsed by them.
 
+
+DarkVerse Preview : https://darkverse-sandy.vercel.app
+
 ---
 
 <div align="center">
